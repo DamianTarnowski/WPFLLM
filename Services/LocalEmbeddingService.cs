@@ -112,7 +112,27 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
 
     private string PrepareE5Text(string text, bool isQuery)
     {
-        // E5 models require specific prefixes
+        // Get model info for instruct format check
+        if (_currentModelId != null && EmbeddingModels.Available.TryGetValue(_currentModelId, out var modelInfo))
+        {
+            if (modelInfo.IsInstructModel)
+            {
+                // Instruct models: "Instruct: {task}\nQuery: {query}" for queries, no prefix for documents
+                if (isQuery)
+                {
+                    if (text.StartsWith("Instruct:"))
+                        return text;
+                    return $"Instruct: {modelInfo.DefaultTaskInstruction}\nQuery: {text}";
+                }
+                else
+                {
+                    // Documents don't need prefix for instruct models
+                    return text;
+                }
+            }
+        }
+        
+        // Standard E5 models: query:/passage: prefixes
         var prefix = isQuery ? "query: " : "passage: ";
         
         // Don't double-prefix

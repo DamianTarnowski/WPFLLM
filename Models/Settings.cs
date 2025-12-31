@@ -37,12 +37,33 @@ public class EmbeddingModelInfo
     public string RamRequired { get; set; } = string.Empty;
     public string InferenceSpeed { get; set; } = string.Empty;
     public string RecommendedFor { get; set; } = string.Empty;
+    
+    // Instruct model support
+    public bool IsInstructModel { get; set; } = false;
+    public string DefaultTaskInstruction { get; set; } = "Given a web search query, retrieve relevant passages that answer the query";
 }
 
 public static class EmbeddingModels
 {
     public static readonly Dictionary<string, EmbeddingModelInfo> Available = new()
     {
+        ["multilingual-e5-large-instruct"] = new()
+        {
+            Id = "multilingual-e5-large-instruct",
+            DisplayName = "Multilingual E5 Large Instruct ⭐",
+            Description = "Najnowszy model z instrukcjami. Fine-tuned na 1B+ parach tekstu. Lepsze rozumienie kontekstu i intencji zapytań. Format: 'Instruct: [zadanie]\\nQuery: [pytanie]' dla zapytań, dokumenty bez prefiksu.",
+            Dimensions = 1024,
+            SizeBytes = 2_200_000_000,
+            RequiredFiles = ["model.onnx", "tokenizer.json"],
+            HuggingFaceRepo = "intfloat/multilingual-e5-large-instruct",
+            Languages = ["pl", "en", "de", "fr", "es", "it", "pt", "nl", "ru", "zh", "ja", "ko", "+90 więcej"],
+            QualityRating = 5,
+            RamRequired = "4-6 GB RAM",
+            InferenceSpeed = "~150-300ms/tekst",
+            RecommendedFor = "Najlepsza jakość, zaawansowane wyszukiwanie semantyczne",
+            IsInstructModel = true,
+            DefaultTaskInstruction = "Given a web search query, retrieve relevant passages that answer the query"
+        },
         ["multilingual-e5-large"] = new()
         {
             Id = "multilingual-e5-large",

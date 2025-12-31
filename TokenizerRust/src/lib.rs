@@ -1,12 +1,12 @@
-use once_cell::sync::OnceCell;
 use std::ffi::{c_char, c_int, CStr};
-use std::ptr;
+use std::sync::Mutex;
 use tokenizers::Tokenizer;
 
-static TOKENIZER: OnceCell<Tokenizer> = OnceCell::new();
+static TOKENIZER: Mutex<Option<Tokenizer>> = Mutex::new(None);
 
 /// Initialize the tokenizer from a tokenizer.json file path
 /// Returns 0 on success, negative on error
+/// Can be called multiple times to reinitialize with a different tokenizer
 #[no_mangle]
 pub extern "C" fn tokenizer_initialize(path: *const c_char) -> c_int {
     if path.is_null() {
@@ -24,9 +24,12 @@ pub extern "C" fn tokenizer_initialize(path: *const c_char) -> c_int {
         Err(_) => return -3,
     };
 
-    match TOKENIZER.set(tokenizer) {
-        Ok(_) => 0,
-        Err(_) => -4, // Already initialized
+    match TOKENIZER.lock() {
+        Ok(mut guard) => {
+            *guard = Some(tokenizer);
+            0
+        }
+        Err(_) => -4, // Lock poisoned
     }
 }
 
@@ -48,7 +51,12 @@ pub extern "C" fn tokenizer_encode(
         Err(_) => return -2,
     };
 
-    let tokenizer = match TOKENIZER.get() {
+    let guard = match TOKENIZER.lock() {
+        Ok(g) => g,
+        Err(_) => return -5, // Lock poisoned
+    };
+
+    let tokenizer = match guard.as_ref() {
         Some(t) => t,
         None => return -3, // Not initialized
     };
@@ -71,9 +79,10 @@ pub extern "C" fn tokenizer_encode(
     len as c_int
 }
 
-/// Free the tokenizer (optional cleanup)
+/// Free the tokenizer and allow reinitialization
 #[no_mangle]
 pub extern "C" fn tokenizer_free() {
-    // OnceCell doesn't support clearing, but we can just leave it
-    // The tokenizer will be freed when the DLL is unloaded
+    if let Ok(mut guard) = TOKENIZER.lock() {
+        *guard = None;
+    }
 }
