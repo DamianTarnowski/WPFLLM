@@ -86,13 +86,14 @@ public interface IRagService
 - Progress reporting
 
 #### `LocalEmbeddingService`
-Runs ONNX embedding models locally.
+Runs ONNX embedding models locally with Rust FFI tokenizer.
 
 ```csharp
 public interface ILocalEmbeddingService
 {
     Task InitializeAsync(string modelId);
     Task<float[]> GetEmbeddingAsync(string text);
+    Task<float[]> GetEmbeddingAsync(string text, bool isQuery);
     Task<bool> IsAvailableAsync();
     int GetDimensions();
 }
@@ -102,7 +103,26 @@ public interface ILocalEmbeddingService
 - Lazy model loading
 - Thread-safe initialization
 - E5 prefix handling (query:/passage:)
+- **Rust HuggingFace tokenizer** (add_special_tokens=true)
+- Mean pooling + L2 normalization
 - Memory-efficient inference
+
+#### `RustTokenizer`
+Native Rust FFI wrapper for HuggingFace tokenizers library.
+
+```csharp
+public static class RustTokenizer
+{
+    public static bool Initialize(string tokenizerPath);
+    public static int[] Encode(string text, int maxLength = 512);
+    public static bool IsInitialized { get; }
+}
+```
+
+**Why Rust?**
+- .NET tokenizer libraries don't support `add_special_tokens=true`
+- Without special tokens (`<s>`, `</s>`), E5 embeddings have poor discrimination
+- Rust tokenizer improved GAP from **0.7% to 14.5%** (20x better!)
 
 #### `ModelDownloadService`
 Manages model downloads from HuggingFace.
@@ -230,7 +250,9 @@ CREATE TABLE Settings (
 | Microsoft.Extensions.DependencyInjection | 9.x | DI container |
 | Microsoft.Data.Sqlite | 9.x | SQLite provider |
 | Dapper | 2.x | Micro-ORM |
+| Microsoft.ML.OnnxRuntime | 1.21.0 | ONNX inference |
 | Microsoft.SemanticKernel.Connectors.Onnx | 1.55.0-alpha | ONNX embeddings |
+| **hf_tokenizer.dll** | - | Rust tokenizer (HuggingFace) |
 
 ## Future Improvements
 
