@@ -1,0 +1,384 @@
+<UserControl x:Class="WPFLLM.Views.ChatView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:WPFLLM.ViewModels">
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type vm:ChatMessageViewModel}">
+            <Grid Margin="8,4"
+                  HorizontalAlignment="{Binding IsUser, Converter={StaticResource AlignConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Delete button (left for assistant, right for user) -->
+                <Button x:Name="DeleteBtn"
+                        Grid.Column="0"
+                        Content="🗑"
+                        FontSize="10"
+                        Padding="4,2"
+                        Margin="0,0,4,0"
+                        VerticalAlignment="Top"
+                        Opacity="0"
+                        Cursor="Hand"
+                        Command="{Binding DataContext.DeleteMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding}"
+                        Visibility="{Binding IsUser, Converter={StaticResource InverseBoolToVisConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#EF4444"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <Border Grid.Column="1" Padding="12,8" CornerRadius="12" MaxWidth="600">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource AssistantMessageBrush}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource UserMessageBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="{Binding Content}" 
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource TextBrush}"
+                               FontSize="14"/>
+                </Border>
+                
+                <!-- Delete button for user messages (on right) -->
+                <Button x:Name="DeleteBtnUser"
+                        Grid.Column="1"
+                        Content="🗑"
+                        FontSize="10"
+                        Padding="4,2"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Right"
+                        Opacity="0"
+                        Cursor="Hand"
+                        Command="{Binding DataContext.DeleteMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding}"
+                        Visibility="{Binding IsUser, Converter={StaticResource BoolToVis}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#EF4444"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="DeleteBtn" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                                <DoubleAnimation Storyboard.TargetName="DeleteBtnUser" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="DeleteBtn" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                                <DoubleAnimation Storyboard.TargetName="DeleteBtnUser" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="SidebarColumn" Width="280"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border x:Name="Sidebar" Background="{StaticResource SurfaceBrush}" Padding="12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Button Content="+ New Chat" 
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding NewConversationCommand}"
+                        Margin="0,0,0,12"/>
+
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding Conversations}"
+                         SelectedItem="{Binding SelectedConversation}"
+                         Style="{StaticResource ModernListBox}"
+                         ItemContainerStyle="{StaticResource ConversationListItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" 
+                                       TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource TextBrush}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Button Grid.Row="2" 
+                        Content="Delete Selected"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding DeleteConversationCommand}"
+                        Margin="0,12,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- Sidebar Toggle Button -->
+        <Border Grid.Column="1" 
+                Background="{StaticResource SurfaceLightBrush}" 
+                Width="24"
+                Cursor="Hand"
+                MouseLeftButtonDown="ToggleSidebar_Click">
+            <Grid>
+                <TextBlock x:Name="ToggleIcon"
+                           Text="◀" 
+                           FontSize="12"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           ToolTip="Ukryj/Pokaż konwersacje"/>
+            </Grid>
+        </Border>
+
+        <!-- Chat Area -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Search Bar -->
+            <Border Background="{StaticResource SurfaceBrush}" 
+                    Padding="12,8"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{StaticResource SurfaceLightBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding SemanticSearchCommand}"/>
+                            <KeyBinding Key="Escape" Command="{Binding CloseSearchCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    
+                    <Button Grid.Column="1" 
+                            Content="🔍 Search"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding SemanticSearchCommand}"
+                            IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBoolConverter}}"
+                            Padding="12,6"
+                            Margin="8,0,0,0"/>
+                    
+                    <!-- Embedding status -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+                        <Button Command="{Binding GenerateEmbeddingsCommand}"
+                                IsEnabled="{Binding IsGeneratingEmbeddings, Converter={StaticResource InverseBoolConverter}}"
+                                Padding="8,6"
+                                ToolTip="Generate embeddings for messages">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+                                    <Setter Property="Content" Value="⚡"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsGeneratingEmbeddings}" Value="True">
+                                            <Setter Property="Content" Value="⏳"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <TextBlock Text="{Binding PendingEmbeddingsCount, StringFormat='{}{0} pending'}"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Margin="6,0,0,0"
+                                   Visibility="{Binding PendingEmbeddingsCount, Converter={StaticResource CountToVis}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Search Results Overlay -->
+            <Border Grid.Row="1"
+                    Background="{StaticResource BackgroundBrush}"
+                    Visibility="{Binding ShowSearchResults, Converter={StaticResource BoolToVis}}"
+                    Padding="16"
+                    Panel.ZIndex="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="🔍 Search Results" 
+                                   FontSize="18" 
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextBrush}"/>
+                        <Button Content="✕" 
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding CloseSearchCommand}"
+                                Padding="8,4"
+                                Margin="12,0,0,0"/>
+                    </StackPanel>
+                    
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SearchResults}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource SurfaceBrush}"
+                                            CornerRadius="8"
+                                            Padding="12"
+                                            Margin="0,0,0,8"
+                                            Cursor="Hand"
+                                            MouseLeftButtonDown="SearchResult_Click">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding ConversationTitle}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource PrimaryBrush}"
+                                                           FontSize="13"/>
+                                                <TextBlock Text="{Binding ScoreText}"
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           FontSize="11"
+                                                           Margin="8,0,0,0"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Foreground="{StaticResource TextMutedBrush}"
+                                                           FontSize="11"
+                                                           Margin="8,0,0,0"
+                                                           VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="🤖"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                                                    <Setter Property="Text" Value="👤"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            
+                                            <TextBlock Grid.Row="1"
+                                                       Text="{Binding MessageContent}"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="{StaticResource TextBrush}"
+                                                       FontSize="13"
+                                                       Margin="0,6,0,0"/>
+                                            
+                                            <TextBlock Grid.Row="2"
+                                                       Text="{Binding CreatedAt, StringFormat='{}{0:g}'}"
+                                                       Foreground="{StaticResource TextMutedBrush}"
+                                                       FontSize="10"
+                                                       Margin="0,6,0,0"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- Messages -->
+            <ScrollViewer x:Name="MessagesScrollViewer" 
+                          Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="16">
+                <ItemsControl ItemsSource="{Binding Messages}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Input Area -->
+            <Border Grid.Row="2" 
+                    Background="{StaticResource SurfaceBrush}"
+                    Padding="16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBox}"
+                             AcceptsReturn="False"
+                             MaxHeight="120"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding SendMessageCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                        <Button Content="Send"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding SendMessageCommand}"
+                                IsEnabled="{Binding IsStreaming, Converter={StaticResource InverseBoolConverter}}"
+                                Visibility="{Binding IsStreaming, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                        
+                        <Button Content="Stop"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding StopStreamingCommand}"
+                                Visibility="{Binding IsStreaming, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="3" 
+                    Background="{StaticResource SurfaceBrush}"
+                    Padding="16,8"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{StaticResource SurfaceLightBrush}">
+                <TextBlock Text="{Binding StatusText}" 
+                           Foreground="{StaticResource TextMutedBrush}"
+                           FontSize="12"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

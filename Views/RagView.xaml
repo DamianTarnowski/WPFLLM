@@ -1,0 +1,86 @@
+<UserControl x:Class="WPFLLM.Views.RagView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel>
+            <TextBlock Text="Knowledge Base" 
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextBrush}"
+                       Margin="0,0,0,8"/>
+            <TextBlock Text="Add documents to enable RAG. The system will use relevant content from these documents to answer your questions."
+                       Foreground="{StaticResource TextMutedBrush}"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,24"/>
+        </StackPanel>
+
+        <!-- Documents List -->
+        <Border Grid.Row="1" 
+                Background="{StaticResource SurfaceBrush}"
+                CornerRadius="8"
+                Padding="4">
+            <ListBox ItemsSource="{Binding Documents}"
+                     SelectedItem="{Binding SelectedDocument}"
+                     Style="{StaticResource ModernListBox}"
+                     ItemContainerStyle="{StaticResource ConversationListItem}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding FileName}" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Foreground="{StaticResource TextMutedBrush}" FontSize="12">
+                                <Run Text="Added: "/>
+                                <Run Text="{Binding CreatedAt, StringFormat=g}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0">
+            <Button Content="Add Documents"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding AddDocumentCommand}"
+                    IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
+                    Margin="0,0,8,0"/>
+            
+            <Button Content="Delete Selected"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding DeleteDocumentCommand}"
+                    IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBoolConverter}}"
+                    Margin="0,0,8,0"/>
+
+            <Button Content="Generate Embeddings"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding GenerateEmbeddingsCommand}"
+                    Visibility="{Binding IsProcessing, Converter={StaticResource InverseBoolToVisConverter}}"
+                    Margin="0,0,8,0"/>
+
+            <Button Content="Cancel"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding CancelEmbeddingsCommand}"
+                    Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+
+        <!-- Status -->
+        <Border Grid.Row="3" 
+                Background="{StaticResource SurfaceBrush}"
+                CornerRadius="6"
+                Padding="12"
+                Margin="0,16,0,0">
+            <TextBlock Text="{Binding StatusMessage}"
+                       Foreground="{StaticResource TextMutedBrush}"/>
+        </Border>
+    </Grid>
+</UserControl>
