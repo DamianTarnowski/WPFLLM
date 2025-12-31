@@ -341,6 +341,61 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
+            <!-- Test Section -->
+            <Border Background="{StaticResource SurfaceBrush}" 
+                    CornerRadius="8" 
+                    Padding="16"
+                    Margin="0,16,0,0">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="🧪 Test podobieństwa słów polskich" 
+                                       FontSize="16" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Text="Sprawdź jakość embeddingów na przykładowych słowach polskich"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       FontSize="12"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="▶️ Uruchom test"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding RunEmbeddingTestCommand}"
+                                IsEnabled="{Binding IsTestRunning, Converter={StaticResource InverseBoolConverter}}"
+                                Padding="16,8"/>
+                    </Grid>
+                    
+                    <!-- Loading indicator -->
+                    <StackPanel Orientation="Horizontal" 
+                                Margin="0,12,0,0"
+                                Visibility="{Binding IsTestRunning, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="⏳ Generowanie embeddingów..." 
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   FontSize="13"/>
+                    </StackPanel>
+                    
+                    <!-- Test Results -->
+                    <Border Background="{StaticResource BackgroundBrush}"
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,12,0,0"
+                            Visibility="{Binding HasTestResults, Converter={StaticResource BoolToVis}}">
+                        <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                            <TextBlock Text="{Binding TestResults}"
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Foreground="{StaticResource TextBrush}"
+                                       TextWrapping="NoWrap"/>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+
             <!-- Info Section -->
             <Border Background="{StaticResource SurfaceBrush}" 
                     CornerRadius="8" 
