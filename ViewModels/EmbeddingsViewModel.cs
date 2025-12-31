@@ -258,6 +258,143 @@ public partial class EmbeddingsViewModel : ObservableObject
         model.Status = await _downloadService.GetDownloadStatusAsync(model.Id);
         model.DownloadedBytes = await _downloadService.GetDownloadedSizeAsync(model.Id);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // EMBEDDING TEST - Polish Word Similarity
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isTestRunning;
+
+    [ObservableProperty]
+    private string _testResults = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasTestResults;
+
+    [RelayCommand]
+    private async Task RunEmbeddingTestAsync()
+    {
+        if (!await _localEmbeddingService.IsAvailableAsync())
+        {
+            StatusMessage = "Najpierw załaduj model!";
+            return;
+        }
+
+        IsTestRunning = true;
+        TestResults = string.Empty;
+        HasTestResults = false;
+        var sb = new System.Text.StringBuilder();
+
+        try
+        {
+            sb.AppendLine("═══════════════════════════════════════════════════════════");
+            sb.AppendLine("       TEST EMBEDDINGÓW - Podobieństwo słów polskich");
+            sb.AppendLine("═══════════════════════════════════════════════════════════\n");
+
+            var testGroups = new (string Name, string[] Words)[]
+            {
+                ("🏠 Dom i Mieszkanie", new[] { "dom", "mieszkanie", "budynek", "chata", "willa" }),
+                ("🚗 Transport", new[] { "samochód", "auto", "pojazd", "maszyna", "rower" }),
+                ("🍎 Jedzenie", new[] { "jabłko", "gruszka", "owoc", "banan", "chleb" }),
+                ("👨 Rodzina", new[] { "ojciec", "tata", "rodzic", "matka", "brat" }),
+                ("💻 Technologia", new[] { "komputer", "laptop", "telefon", "smartfon", "tablet" }),
+            };
+
+            var embeddings = new Dictionary<string, float[]>();
+
+            // Generate embeddings
+            StatusMessage = "Generowanie embeddingów...";
+            foreach (var (_, words) in testGroups)
+            {
+                foreach (var word in words)
+                {
+                    if (!embeddings.ContainsKey(word))
+                    {
+                        embeddings[word] = await _localEmbeddingService.GetEmbeddingAsync(word);
+                    }
+                }
+            }
+
+            // Show results for each group
+            foreach (var (name, words) in testGroups)
+            {
+                sb.AppendLine($"\n{name}:");
+                sb.AppendLine($"  Bazowe słowo: \"{words[0]}\"\n");
+
+                var baseEmb = embeddings[words[0]];
+                var similarities = new List<(string word, double sim)>();
+
+                foreach (var word in words.Skip(1))
+                {
+                    var sim = CosineSimilarity(baseEmb, embeddings[word]);
+                    similarities.Add((word, sim));
+                }
+
+                foreach (var (word, sim) in similarities.OrderByDescending(x => x.sim))
+                {
+                    var bar = new string('█', (int)(sim * 15));
+                    var empty = new string('░', 15 - (int)(sim * 15));
+                    sb.AppendLine($"  {word,-14} [{bar}{empty}] {sim:P1}");
+                }
+            }
+
+            // Cross-category matrix
+            sb.AppendLine("\n═══════════════════════════════════════════════════════════");
+            sb.AppendLine("         PORÓWNANIE MIĘDZY KATEGORIAMI");
+            sb.AppendLine("═══════════════════════════════════════════════════════════\n");
+
+            var crossWords = new[] { "dom", "samochód", "jabłko", "ojciec", "komputer" };
+            sb.Append("              ");
+            foreach (var w in crossWords) sb.Append($"{w,-12}");
+            sb.AppendLine();
+
+            foreach (var word1 in crossWords)
+            {
+                sb.Append($"  {word1,-12}");
+                foreach (var word2 in crossWords)
+                {
+                    if (word1 == word2)
+                        sb.Append("   ────     ");
+                    else
+                    {
+                        var sim = CosineSimilarity(embeddings[word1], embeddings[word2]);
+                        sb.Append($"   {sim:F2}      ");
+                    }
+                }
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("\n═══════════════════════════════════════════════════════════");
+            sb.AppendLine("✅ Test zakończony pomyślnie!");
+
+            TestResults = sb.ToString();
+            HasTestResults = true;
+            StatusMessage = "Test embeddingów zakończony!";
+        }
+        catch (Exception ex)
+        {
+            TestResults = $"❌ Błąd testu: {ex.Message}";
+            HasTestResults = true;
+            StatusMessage = $"Błąd testu: {ex.Message}";
+        }
+        finally
+        {
+            IsTestRunning = false;
+        }
+    }
+
+    private static double CosineSimilarity(float[] a, float[] b)
+    {
+        double dot = 0, magA = 0, magB = 0;
+        for (int i = 0; i < a.Length; i++)
+        {
+            dot += a[i] * b[i];
+            magA += a[i] * a[i];
+            magB += b[i] * b[i];
+        }
+        return dot / (Math.Sqrt(magA) * Math.Sqrt(magB));
+    }
 }
 
 public partial class EmbeddingModelViewModel : ObservableObject
