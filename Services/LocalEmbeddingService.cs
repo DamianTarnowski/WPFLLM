@@ -1,7 +1,6 @@
 using System.IO;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.ML.Tokenizers;
 using WPFLLM.Models;
 
 namespace WPFLLM.Services;
@@ -9,6 +8,7 @@ namespace WPFLLM.Services;
 public interface ILocalEmbeddingService
 {
     Task<float[]> GetEmbeddingAsync(string text, CancellationToken cancellationToken = default);
+    Task<float[]> GetEmbeddingAsync(string text, bool isQuery, CancellationToken cancellationToken = default);
     Task<bool> IsAvailableAsync();
     Task InitializeAsync(string modelId);
     void Dispose();
@@ -18,11 +18,10 @@ public interface ILocalEmbeddingService
 public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
 {
     private InferenceSession? _session;
-    private SentencePieceTokenizer? _tokenizer;
     private string? _currentModelId;
     private bool _isInitialized;
     private readonly SemaphoreSlim _initLock = new(1, 1);
-    private const int MaxSequenceLength = 512;
+    private const int MaxSequenceLength = 256;
 
     public async Task InitializeAsync(string modelId)
     {
@@ -39,7 +38,7 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
 
             var modelPath = EmbeddingModels.GetModelPath(modelId);
             var onnxPath = Path.Combine(modelPath, "model.onnx");
-            var tokenizerPath = Path.Combine(modelPath, "sentencepiece.bpe.model");
+            var tokenizerPath = Path.Combine(modelPath, "tokenizer.json");
 
             if (!File.Exists(onnxPath))
                 throw new FileNotFoundException($"Model file not found: {onnxPath}");
@@ -52,9 +51,9 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
             sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
             _session = new InferenceSession(onnxPath, sessionOptions);
 
-            // Load SentencePiece tokenizer
-            using var tokenizerStream = File.OpenRead(tokenizerPath);
-            _tokenizer = SentencePieceTokenizer.Create(tokenizerStream);
+            // Initialize Rust tokenizer (HuggingFace with add_special_tokens=true)
+            if (!RustTokenizer.Initialize(tokenizerPath))
+                throw new Exception($"Failed to initialize tokenizer from: {tokenizerPath}");
 
             _currentModelId = modelId;
             _isInitialized = true;
@@ -67,18 +66,22 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
 
     public Task<float[]> GetEmbeddingAsync(string text, CancellationToken cancellationToken = default)
     {
-        if (!_isInitialized || _session == null || _tokenizer == null)
+        return GetEmbeddingAsync(text, isQuery: true, cancellationToken);
+    }
+
+    public Task<float[]> GetEmbeddingAsync(string text, bool isQuery, CancellationToken cancellationToken = default)
+    {
+        if (!_isInitialized || _session == null || !RustTokenizer.IsInitialized)
             throw new InvalidOperationException("Local embedding service not initialized");
 
-        // E5 models require prefix
-        var prefixedText = _currentModelId?.Contains("e5") == true 
-            ? $"query: {text}" 
-            : text;
+        // E5 models require prefix - CRITICAL for good embeddings
+        var prefixedText = PrepareE5Text(text, isQuery);
 
-        // Tokenize
-        var encoding = _tokenizer.EncodeToIds(prefixedText, MaxSequenceLength, out _, out _);
-        var inputIds = encoding.ToArray();
-        var attentionMask = Enumerable.Repeat(1L, inputIds.Length).ToArray();
+        // Tokenize with Rust HuggingFace tokenizer (add_special_tokens=true automatically!)
+        var inputIds = RustTokenizer.Encode(prefixedText, MaxSequenceLength);
+
+        // Create attention mask (all tokens are valid)
+        var attentionMask = inputIds.Select(_ => 1L).ToArray();
 
         // Create tensors
         var inputIdsTensor = new DenseTensor<long>(inputIds.Select(x => (long)x).ToArray(), [1, inputIds.Length]);
@@ -91,40 +94,41 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
             NamedOnnxValue.CreateFromTensor("attention_mask", attentionMaskTensor)
         };
 
-        // Check if model needs token_type_ids
-        var inputNames = _session.InputMetadata.Keys.ToList();
-        if (inputNames.Contains("token_type_ids"))
-        {
-            var tokenTypeIds = new DenseTensor<long>(new long[inputIds.Length], [1, inputIds.Length]);
-            inputs.Add(NamedOnnxValue.CreateFromTensor("token_type_ids", tokenTypeIds));
-        }
-
         using var results = _session.Run(inputs);
         
-        // Get the output - usually "last_hidden_state" or "sentence_embedding"
         var output = results.FirstOrDefault(r => r.Name == "last_hidden_state") 
-                  ?? results.FirstOrDefault(r => r.Name == "sentence_embedding")
                   ?? results.First();
 
         var outputTensor = output.AsTensor<float>();
         
-        // Mean pooling over sequence dimension
+        // Mean pooling over sequence dimension (E5 requires mean pooling, NOT CLS)
         var embedding = MeanPooling(outputTensor, attentionMask);
         
-        // L2 normalize
+        // L2 normalize - CRITICAL for cosine similarity
         var normalized = L2Normalize(embedding);
         
         return Task.FromResult(normalized);
+    }
+
+    private string PrepareE5Text(string text, bool isQuery)
+    {
+        // E5 models require specific prefixes
+        var prefix = isQuery ? "query: " : "passage: ";
+        
+        // Don't double-prefix
+        if (text.StartsWith("query:") || text.StartsWith("passage:"))
+            return text;
+            
+        return prefix + text;
     }
 
     private static float[] MeanPooling(Tensor<float> lastHiddenState, long[] attentionMask)
     {
         var dimensions = lastHiddenState.Dimensions.ToArray();
         
-        // Shape: [batch, seq_len, hidden_size] or [batch, hidden_size]
+        // Shape: [batch, seq_len, hidden_size]
         if (dimensions.Length == 2)
         {
-            // Already pooled, just return
             var result = new float[dimensions[1]];
             for (int i = 0; i < dimensions[1]; i++)
                 result[i] = lastHiddenState[0, i];
@@ -134,19 +138,21 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
         var seqLen = dimensions[1];
         var hiddenSize = dimensions[2];
         var embedding = new float[hiddenSize];
-        var validTokens = attentionMask.Sum();
+        var sumMask = 0f;
 
         for (int i = 0; i < seqLen; i++)
         {
-            if (attentionMask[i] == 0) continue;
-            for (int j = 0; j < hiddenSize; j++)
+            if (attentionMask[i] == 1)
             {
-                embedding[j] += lastHiddenState[0, i, j];
+                for (int j = 0; j < hiddenSize; j++)
+                    embedding[j] += lastHiddenState[0, i, j];
+                sumMask += 1f;
             }
         }
 
-        for (int j = 0; j < hiddenSize; j++)
-            embedding[j] /= validTokens;
+        if (sumMask > 0)
+            for (int i = 0; i < hiddenSize; i++)
+                embedding[i] /= sumMask;
 
         return embedding;
     }
@@ -160,7 +166,7 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
 
     public Task<bool> IsAvailableAsync()
     {
-        return Task.FromResult(_isInitialized && _session != null && _tokenizer != null);
+        return Task.FromResult(_isInitialized && _session != null && RustTokenizer.IsInitialized);
     }
 
     public int GetDimensions()
@@ -174,7 +180,6 @@ public class LocalEmbeddingService : ILocalEmbeddingService, IDisposable
     {
         _session?.Dispose();
         _session = null;
-        _tokenizer = null;
         _isInitialized = false;
         _currentModelId = null;
     }

@@ -13,8 +13,14 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
-    <PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.21.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.55.0-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TokenizerRust\target\release\hf_tokenizer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
