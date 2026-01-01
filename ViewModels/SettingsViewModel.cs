@@ -11,6 +11,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IOpenRouterService _openRouterService;
     private readonly IDatabaseService _databaseService;
+    private readonly ILocalLlmService _localLlmService;
     private List<OpenRouterModel> _allModels = [];
     private List<SavedModel> _savedModels = [];
 
@@ -40,6 +41,21 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private double _ragMinSimilarity = 0.75;
+
+    [ObservableProperty]
+    private bool _useLocalLlm;
+
+    [ObservableProperty]
+    private string _localLlmModel = "phi-3-mini-4k-instruct";
+
+    [ObservableProperty]
+    private bool _isLocalLlmModelDownloaded;
+
+    [ObservableProperty]
+    private bool _isDownloadingModel;
+
+    [ObservableProperty]
+    private string _downloadProgress = string.Empty;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
@@ -88,11 +104,12 @@ public partial class SettingsViewModel : ObservableObject
 
     public ObservableCollection<string> NativeProviderNames { get; } = new(ApiProviders.GetProviderNames());
 
-    public SettingsViewModel(ISettingsService settingsService, IOpenRouterService openRouterService, IDatabaseService databaseService)
+    public SettingsViewModel(ISettingsService settingsService, IOpenRouterService openRouterService, IDatabaseService databaseService, ILocalLlmService localLlmService)
     {
         _settingsService = settingsService;
         _openRouterService = openRouterService;
         _databaseService = databaseService;
+        _localLlmService = localLlmService;
         _ = InitializeAsync();
     }
 
@@ -102,6 +119,7 @@ public partial class SettingsViewModel : ObservableObject
         await LoadSavedModelsAsync();
         await LoadModelsAsync();
         UpdateProviderInfo();
+        await CheckLocalLlmModelAsync();
     }
 
     private async Task LoadSavedModelsAsync()
@@ -124,6 +142,8 @@ public partial class SettingsViewModel : ObservableObject
         UseRag = settings.UseRag;
         RagTopK = settings.RagTopK;
         RagMinSimilarity = settings.RagMinSimilarity;
+        UseLocalLlm = settings.UseLocalLlm;
+        LocalLlmModel = settings.LocalLlmModel;
     }
 
     [RelayCommand]
@@ -367,7 +387,9 @@ public partial class SettingsViewModel : ObservableObject
             SystemPrompt = SystemPrompt,
             UseRag = UseRag,
             RagTopK = RagTopK,
-            RagMinSimilarity = RagMinSimilarity
+            RagMinSimilarity = RagMinSimilarity,
+            UseLocalLlm = UseLocalLlm,
+            LocalLlmModel = LocalLlmModel
         };
 
         await _settingsService.SaveSettingsAsync(settings);
@@ -375,5 +397,49 @@ public partial class SettingsViewModel : ObservableObject
 
         await Task.Delay(2000);
         StatusMessage = string.Empty;
+    }
+
+    private async Task CheckLocalLlmModelAsync()
+    {
+        IsLocalLlmModelDownloaded = await _localLlmService.IsModelDownloadedAsync(LocalLlmModel);
+    }
+
+    [RelayCommand]
+    private async Task DownloadLocalLlmModelAsync()
+    {
+        if (IsDownloadingModel) return;
+        
+        IsDownloadingModel = true;
+        DownloadProgress = "Starting download...";
+        
+        try
+        {
+            var progress = new Progress<(long downloaded, long total, string status)>(p =>
+            {
+                if (p.total > 0)
+                {
+                    var percent = (double)p.downloaded / p.total * 100;
+                    var mb = p.downloaded / 1024.0 / 1024.0;
+                    var totalMb = p.total / 1024.0 / 1024.0;
+                    DownloadProgress = $"{p.status}: {mb:F1}/{totalMb:F1} MB ({percent:F0}%)";
+                }
+                else
+                {
+                    DownloadProgress = p.status;
+                }
+            });
+
+            await _localLlmService.DownloadModelAsync(LocalLlmModel, progress);
+            IsLocalLlmModelDownloaded = true;
+            DownloadProgress = "Download complete!";
+        }
+        catch (Exception ex)
+        {
+            DownloadProgress = "Error: " + ex.Message;
+        }
+        finally
+        {
+            IsDownloadingModel = false;
+        }
     }
 }

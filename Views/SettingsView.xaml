@@ -407,6 +407,53 @@
                 </TextBlock>
             </Border>
 
+            <!-- Local LLM Section -->
+            <TextBlock Text="🤖 Lokalny Model LLM" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource TextBrush}"
+                       Margin="0,0,0,16"/>
+
+            <CheckBox Content="Używaj lokalnego modelu LLM (offline)"
+                      IsChecked="{Binding UseLocalLlm}"
+                      Foreground="{StaticResource TextBrush}"
+                      Margin="0,0,0,12"/>
+
+            <TextBlock Text="Model: Phi-3 Mini 4K Instruct" 
+                       Foreground="{StaticResource TextMutedBrush}"
+                       Margin="0,0,0,4"/>
+            <TextBlock Text="3.8B parametrów, 4-6 GB RAM, ~15-30 tok/s" 
+                       Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="12"
+                       Margin="0,0,0,12"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <TextBlock Text="Status: " Foreground="{StaticResource TextMutedBrush}"/>
+                <TextBlock Foreground="{StaticResource PrimaryBrush}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Nie pobrano"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLocalLlmModelDownloaded}" Value="True">
+                                    <Setter Property="Text" Value="✓ Gotowy"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+
+            <Button Content="Pobierz model (~2.4 GB)"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding DownloadLocalLlmModelCommand}"
+                    IsEnabled="{Binding IsDownloadingModel, Converter={StaticResource InverseBool}}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,8"/>
+
+            <TextBlock Text="{Binding DownloadProgress}" 
+                       Foreground="{StaticResource TextMutedBrush}"
+                       Margin="0,0,0,24"/>
+
             <!-- Save Button -->
             <Button Content="Save Settings"
                     Style="{StaticResource PrimaryButton}"
