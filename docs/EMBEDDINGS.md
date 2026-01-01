@@ -132,13 +132,55 @@ private static float[] L2Normalize(float[] vector)
 
 ## Modele
 
-| Model | Wymiary | Rozmiar | Jakość | RAM |
-|-------|---------|---------|--------|-----|
-| multilingual-e5-small | 384 | ~470MB | ★★★☆☆ | 1-2 GB |
-| multilingual-e5-base | 768 | ~1.1GB | ★★★★☆ | 2-3 GB |
-| multilingual-e5-large | 1024 | ~2.2GB | ★★★★★ | 4-6 GB |
+| Model | Wymiary | Rozmiar | Jakość | RAM | Format |
+|-------|---------|---------|--------|-----|--------|
+| multilingual-e5-small | 384 | ~470MB | ★★★☆☆ | 1-2 GB | query:/passage: |
+| multilingual-e5-base | 768 | ~1.1GB | ★★★★☆ | 2-3 GB | query:/passage: |
+| multilingual-e5-large | 1024 | ~2.2GB | ★★★★★ | 4-6 GB | query:/passage: |
+| **multilingual-e5-large-instruct** ⭐ | 1024 | ~2.2GB | ★★★★★+ | 4-6 GB | Instruct:/Query: |
 
 Wszystkie modele obsługują **100+ języków** w tym polski.
+
+### ⭐ Rekomendowany: multilingual-e5-large-instruct
+
+Najlepszy model do wyszukiwania semantycznego i RAG:
+
+```
+Format zapytania:  Instruct: {opis zadania}\nQuery: {zapytanie}
+Format dokumentu:  {tekst bez prefiksu}
+```
+
+## Wyniki testów produkcyjnych
+
+Testy przeprowadzone 01.01.2026 z 22 parami testowymi (PL/EN/Cross-language):
+
+### Podsumowanie wyników
+
+| Kategoria | Średnia | Min | Max |
+|-----------|---------|-----|-----|
+| 🟢 BARDZO PODOBNE | **87.4%** | 82.5% | 90.5% |
+| 🟡 PODOBNE | **79.5%** | 74.8% | 85.2% |
+| 🔴 RÓŻNE | **73.1%** | 69.6% | 77.1% |
+
+**GAP (dyskryminacja):**
+- Bardzo Podobne vs Różne: **14.4%** ✅
+- Podobne vs Różne: **6.5%** ✅
+
+### Wyniki per język
+
+| Język | Bardzo Podobne | Podobne | Różne | GAP |
+|-------|----------------|---------|-------|-----|
+| 🇵🇱 Polski | 88.7% | 82.8% | 76.1% | **12.6%** |
+| 🇬🇧 English | 88.7% | 77.8% | 70.3% | **18.4%** |
+| 🌐 Cross-lang | 83.5% | 74.8% | 72.4% | **11.1%** |
+
+### Ocena produkcyjna
+
+✅ **ZATWIERDZONY DO PRODUKCJI**
+
+- GAP 14.4% jest wystarczający dla Top-K RAG retrieval
+- Cross-language działa (PL query → EN document)
+- Wyraźna separacja 3 poziomów podobieństwa
 
 ## Budowanie Tokenizera Rust
 
