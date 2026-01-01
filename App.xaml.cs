@@ -31,6 +31,7 @@ public partial class App : Application
         services.AddSingleton<IOpenRouterService, OpenRouterService>();
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();
         services.AddSingleton<ILocalEmbeddingService, LocalEmbeddingService>();
+        services.AddSingleton<ILocalLlmService, LocalLlmService>();
 
         services.AddHttpClient();
 

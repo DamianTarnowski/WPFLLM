@@ -20,6 +20,10 @@ public class AppSettings
     // Embedding settings
     public bool UseLocalEmbeddings { get; set; } = false;
     public string LocalEmbeddingModel { get; set; } = "multilingual-e5-large-instruct";
+    
+    // Local LLM settings
+    public bool UseLocalLlm { get; set; } = false;
+    public string LocalLlmModel { get; set; } = "phi-3-mini-4k-instruct";
 }
 
 public class EmbeddingModelInfo
@@ -109,6 +113,48 @@ public static class EmbeddingModels
             RamRequired = "1-2 GB RAM",
             InferenceSpeed = "~30-60ms/tekst",
             RecommendedFor = "Słabszy sprzęt, szybkie prototypy, duże ilości tekstów"
+        }
+    };
+
+    public static string GetModelsPath() => 
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WPFLLM", "models");
+    
+    public static string GetModelPath(string modelId) => 
+        Path.Combine(GetModelsPath(), modelId);
+}
+
+public class LocalLlmModelInfo
+{
+    public string Id { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public long SizeBytes { get; set; }
+    public string[] RequiredFiles { get; set; } = [];
+    public string HuggingFaceRepo { get; set; } = string.Empty;
+    public int ContextLength { get; set; }
+    public int QualityRating { get; set; }
+    public string RamRequired { get; set; } = string.Empty;
+    public string InferenceSpeed { get; set; } = string.Empty;
+    public string ChatTemplate { get; set; } = string.Empty;
+}
+
+public static class LocalLlmModels
+{
+    public static readonly Dictionary<string, LocalLlmModelInfo> Available = new()
+    {
+        ["phi-3-mini-4k-instruct"] = new()
+        {
+            Id = "phi-3-mini-4k-instruct",
+            DisplayName = "Phi-3 Mini 4K Instruct ⭐ REKOMENDOWANY",
+            Description = "Najlepszy model na zwykły komputer! 3.8B parametrów, świetna jakość, rozumie polski. Optymalny dla RAG i asystenta.",
+            SizeBytes = 2_400_000_000,
+            RequiredFiles = ["phi3-mini-4k-instruct-cpu-int4-rtn-block-32-acc-level-4.onnx", "phi3-mini-4k-instruct-cpu-int4-rtn-block-32-acc-level-4.onnx.data", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "genai_config.json"],
+            HuggingFaceRepo = "microsoft/Phi-3-mini-4k-instruct-onnx",
+            ContextLength = 4096,
+            QualityRating = 4,
+            RamRequired = "4-6 GB RAM",
+            InferenceSpeed = "~15-30 tok/s (CPU INT4)",
+            ChatTemplate = "phi3"
         }
     };
 
