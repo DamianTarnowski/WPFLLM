@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFLLM", "WPFLLM.csproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalLlmTest", "LocalLlmTest\LocalLlmTest.csproj", "{4102BE24-F9F7-4A82-85FE-72DC95F3A319}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFLLM.Tests", "WPFLLM.Tests\WPFLLM.Tests.csproj", "{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{4102BE24-F9F7-4A82-85FE-72DC95F3A319}.Release|x64.Build.0 = Release|Any CPU
 		{4102BE24-F9F7-4A82-85FE-72DC95F3A319}.Release|x86.ActiveCfg = Release|Any CPU
 		{4102BE24-F9F7-4A82-85FE-72DC95F3A319}.Release|x86.Build.0 = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|x64.Build.0 = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Debug|x86.Build.0 = Debug|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|x64.ActiveCfg = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|x64.Build.0 = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|x86.ActiveCfg = Release|Any CPU
+		{2ACCA1EA-0116-41A6-8768-18EBAA296F7F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IOpenRouterService _openRouterService;
     private readonly IDatabaseService _databaseService;
     private readonly ILocalLlmService _localLlmService;
+    private readonly ILocalizationService _localizationService;
+    private readonly IEncryptionService _encryptionService;
     private List<OpenRouterModel> _allModels = [];
     private List<SavedModel> _savedModels = [];
 
@@ -102,14 +104,27 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCurrentModelFavorite;
 
+    [ObservableProperty]
+    private string _selectedLanguage = "en-US";
+
+    [ObservableProperty]
+    private ObservableCollection<LanguageInfo> _availableLanguages = [];
+
+    [ObservableProperty]
+    private bool _encryptData;
+
     public ObservableCollection<string> NativeProviderNames { get; } = new(ApiProviders.GetProviderNames());
 
-    public SettingsViewModel(ISettingsService settingsService, IOpenRouterService openRouterService, IDatabaseService databaseService, ILocalLlmService localLlmService)
+    public SettingsViewModel(ISettingsService settingsService, IOpenRouterService openRouterService, IDatabaseService databaseService, ILocalLlmService localLlmService, ILocalizationService localizationService, IEncryptionService encryptionService)
     {
         _settingsService = settingsService;
         _openRouterService = openRouterService;
         _databaseService = databaseService;
         _localLlmService = localLlmService;
+        _localizationService = localizationService;
+        _encryptionService = encryptionService;
+        
+        AvailableLanguages = new ObservableCollection<LanguageInfo>(_localizationService.AvailableLanguages);
         _ = InitializeAsync();
     }
 
@@ -144,6 +159,18 @@ public partial class SettingsViewModel : ObservableObject
         RagMinSimilarity = settings.RagMinSimilarity;
         UseLocalLlm = settings.UseLocalLlm;
         LocalLlmModel = settings.LocalLlmModel;
+        SelectedLanguage = settings.Language;
+        EncryptData = settings.EncryptData;
+    }
+
+    partial void OnEncryptDataChanged(bool value)
+    {
+        _encryptionService.SetEnabled(value);
+    }
+
+    partial void OnSelectedLanguageChanged(string value)
+    {
+        _localizationService.SetLanguage(value);
     }
 
     [RelayCommand]
@@ -389,7 +416,9 @@ public partial class SettingsViewModel : ObservableObject
             RagTopK = RagTopK,
             RagMinSimilarity = RagMinSimilarity,
             UseLocalLlm = UseLocalLlm,
-            LocalLlmModel = LocalLlmModel
+            LocalLlmModel = LocalLlmModel,
+            Language = SelectedLanguage,
+            EncryptData = EncryptData
         };
 
         await _settingsService.SaveSettingsAsync(settings);

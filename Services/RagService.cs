@@ -257,4 +257,149 @@ public class RagService : IRagService
         var denom = Math.Sqrt(normA) * Math.Sqrt(normB);
         return denom == 0 ? 0 : dot / denom;
     }
+
+    public async Task<RetrievalResult> RetrieveAsync(string query, int topK = 5, double minSimilarity = 0.7, RetrievalMode mode = RetrievalMode.Hybrid)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var result = new RetrievalResult
+        {
+            Metrics = new RetrievalMetrics
+            {
+                Mode = mode,
+                TopK = topK,
+                MinSimilarity = minSimilarity
+            }
+        };
+
+        var vectorResults = new List<(RagChunk Chunk, double Score)>();
+        var keywordResults = new List<(RagChunk Chunk, double Score)>();
+        
+        var embeddingStart = sw.ElapsedMilliseconds;
+        float[] queryEmbedding = [];
+        
+        // Vector search
+        if (mode is RetrievalMode.Vector or RetrievalMode.Hybrid)
+        {
+            queryEmbedding = await _llmService.GetEmbeddingAsync(query);
+            result.Metrics.EmbeddingTimeMs = sw.ElapsedMilliseconds - embeddingStart;
+            
+            if (queryEmbedding.Length > 0)
+            {
+                var allChunks = await _database.GetAllChunksAsync();
+                result.Metrics.TotalChunksSearched = allChunks.Count;
+                
+                foreach (var chunk in allChunks.Where(c => !string.IsNullOrEmpty(c.Embedding)))
+                {
+                    var embedding = JsonSerializer.Deserialize<float[]>(chunk.Embedding!);
+                    if (embedding != null)
+                    {
+                        var score = CosineSimilarity(queryEmbedding, embedding);
+                        if (score >= minSimilarity)
+                        {
+                            vectorResults.Add((chunk, score));
+                        }
+                    }
+                }
+                result.Metrics.VectorMatches = vectorResults.Count;
+            }
+        }
+
+        // Keyword search (FTS5)
+        if (mode is RetrievalMode.Keyword or RetrievalMode.Hybrid)
+        {
+            keywordResults = await _database.SearchChunksFtsAsync(query, topK * 2);
+            result.Metrics.KeywordMatches = keywordResults.Count;
+            
+            if (result.Metrics.TotalChunksSearched == 0)
+            {
+                var allChunks = await _database.GetAllChunksAsync();
+                result.Metrics.TotalChunksSearched = allChunks.Count;
+            }
+        }
+
+        // Fuse results using RRF (Reciprocal Rank Fusion)
+        var fusedResults = FuseResults(vectorResults, keywordResults, mode);
+        
+        // Get top K results
+        var topResults = fusedResults
+            .OrderByDescending(x => x.FusedScore)
+            .Take(topK)
+            .ToList();
+
+        // Enrich with document names
+        foreach (var item in topResults)
+        {
+            item.DocumentName = await _database.GetDocumentNameAsync(item.DocumentId) ?? "Unknown";
+        }
+
+        result.Chunks = topResults;
+        result.Metrics.FinalResults = topResults.Count;
+        result.Metrics.RetrievalTimeMs = sw.ElapsedMilliseconds - result.Metrics.EmbeddingTimeMs;
+        result.Metrics.TotalTimeMs = sw.ElapsedMilliseconds;
+
+        return result;
+    }
+
+    private static List<RetrievedChunk> FuseResults(
+        List<(RagChunk Chunk, double Score)> vectorResults,
+        List<(RagChunk Chunk, double Score)> keywordResults,
+        RetrievalMode mode)
+    {
+        const double k = 60.0; // RRF constant
+        var fusedScores = new Dictionary<long, RetrievedChunk>();
+
+        // Process vector results
+        if (mode is RetrievalMode.Vector or RetrievalMode.Hybrid)
+        {
+            var ranked = vectorResults.OrderByDescending(x => x.Score).ToList();
+            for (int i = 0; i < ranked.Count; i++)
+            {
+                var (chunk, score) = ranked[i];
+                var rrfScore = 1.0 / (k + i + 1);
+                
+                if (!fusedScores.TryGetValue(chunk.Id, out var existing))
+                {
+                    existing = new RetrievedChunk
+                    {
+                        ChunkId = chunk.Id,
+                        DocumentId = chunk.DocumentId,
+                        Content = chunk.Content,
+                        ChunkIndex = chunk.ChunkIndex
+                    };
+                    fusedScores[chunk.Id] = existing;
+                }
+                
+                existing.VectorScore = score;
+                existing.FusedScore += rrfScore;
+            }
+        }
+
+        // Process keyword results
+        if (mode is RetrievalMode.Keyword or RetrievalMode.Hybrid)
+        {
+            var ranked = keywordResults.OrderByDescending(x => x.Score).ToList();
+            for (int i = 0; i < ranked.Count; i++)
+            {
+                var (chunk, score) = ranked[i];
+                var rrfScore = 1.0 / (k + i + 1);
+                
+                if (!fusedScores.TryGetValue(chunk.Id, out var existing))
+                {
+                    existing = new RetrievedChunk
+                    {
+                        ChunkId = chunk.Id,
+                        DocumentId = chunk.DocumentId,
+                        Content = chunk.Content,
+                        ChunkIndex = chunk.ChunkIndex
+                    };
+                    fusedScores[chunk.Id] = existing;
+                }
+                
+                existing.KeywordScore = score;
+                existing.FusedScore += rrfScore;
+            }
+        }
+
+        return fusedScores.Values.ToList();
+    }
 }

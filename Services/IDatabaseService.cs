@@ -27,6 +27,8 @@ public interface IDatabaseService
     Task<List<RagChunk>> GetAllChunksAsync();
     Task AddChunksAsync(long documentId, List<string> chunks);
     Task UpdateChunkEmbeddingAsync(long chunkId, string embedding);
+    Task<List<(RagChunk Chunk, double Score)>> SearchChunksFtsAsync(string query, int limit = 20);
+    Task<string?> GetDocumentNameAsync(long documentId);
     
     Task<AppSettings> GetSettingsAsync();
     Task SaveSettingsAsync(AppSettings settings);

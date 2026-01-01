@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# API Keys and secrets
+.env
+*.env
+.env.*
+!.env.example

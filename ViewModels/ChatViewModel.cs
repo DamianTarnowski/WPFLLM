@@ -10,6 +10,7 @@ namespace WPFLLM.ViewModels;
 public partial class ChatViewModel : ObservableObject
 {
     private readonly IChatService _chatService;
+    private readonly IRagService _ragService;
     private CancellationTokenSource? _streamCts;
 
     [ObservableProperty]
@@ -51,9 +52,25 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty]
     private string _embeddingProgress = string.Empty;
 
-    public ChatViewModel(IChatService chatService)
+    // RAG Debug Panel
+    [ObservableProperty]
+    private bool _showDebugPanel;
+
+    [ObservableProperty]
+    private RetrievalResult? _lastRetrievalResult;
+
+    [ObservableProperty]
+    private ObservableCollection<RetrievedChunkViewModel> _retrievedChunks = [];
+
+    [ObservableProperty]
+    private RetrievalMode _selectedRetrievalMode = RetrievalMode.Hybrid;
+
+    public IReadOnlyList<RetrievalMode> RetrievalModes { get; } = Enum.GetValues<RetrievalMode>();
+
+    public ChatViewModel(IChatService chatService, IRagService ragService)
     {
         _chatService = chatService;
+        _ragService = ragService;
         _ = InitializeAsync();
     }
 
@@ -246,6 +263,38 @@ public partial class ChatViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ToggleDebugPanel()
+    {
+        ShowDebugPanel = !ShowDebugPanel;
+    }
+
+    [RelayCommand]
+    private async Task TestRetrievalAsync()
+    {
+        if (string.IsNullOrWhiteSpace(InputText)) return;
+
+        StatusText = "Testing retrieval...";
+        try
+        {
+            var result = await _ragService.RetrieveAsync(InputText, 5, 0.6, SelectedRetrievalMode);
+            LastRetrievalResult = result;
+            
+            RetrievedChunks.Clear();
+            foreach (var chunk in result.Chunks)
+            {
+                RetrievedChunks.Add(new RetrievedChunkViewModel(chunk));
+            }
+
+            ShowDebugPanel = true;
+            StatusText = $"Retrieved {result.Chunks.Count} chunks in {result.Metrics.TotalTimeMs}ms";
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Retrieval error: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
     private async Task GenerateEmbeddingsAsync()
     {
         if (IsGeneratingEmbeddings) return;
@@ -305,5 +354,29 @@ public partial class SearchResultViewModel : ObservableObject
     public SearchResultViewModel(MessageSearchResult result)
     {
         Result = result;
+    }
+}
+
+public partial class RetrievedChunkViewModel : ObservableObject
+{
+    public RetrievedChunk Chunk { get; }
+    
+    public string DocumentName => Chunk.DocumentName;
+    public string Content => Chunk.Content.Length > 300 
+        ? Chunk.Content[..300] + "..." 
+        : Chunk.Content;
+    public string FullContent => Chunk.Content;
+    public int ChunkIndex => Chunk.ChunkIndex;
+    public double VectorScore => Chunk.VectorScore;
+    public double KeywordScore => Chunk.KeywordScore;
+    public double FusedScore => Chunk.FusedScore;
+    
+    public string VectorScoreText => VectorScore > 0 ? $"{VectorScore:P1}" : "-";
+    public string KeywordScoreText => KeywordScore > 0 ? $"{KeywordScore:F2}" : "-";
+    public string FusedScoreText => $"{FusedScore:F4}";
+
+    public RetrievedChunkViewModel(RetrievedChunk chunk)
+    {
+        Chunk = chunk;
     }
 }

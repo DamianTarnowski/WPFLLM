@@ -1,0 +1,139 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- App Title -->
+    <system:String x:Key="AppTitle">WPFLLM - Asystent AI</system:String>
+    
+    <!-- Main Navigation -->
+    <system:String x:Key="Nav_Chat">Czat</system:String>
+    <system:String x:Key="Nav_KnowledgeBase">Baza Wiedzy</system:String>
+    <system:String x:Key="Nav_DocumentAnalysis">Analiza Dokumentów</system:String>
+    <system:String x:Key="Nav_Embeddings">Embeddingi</system:String>
+    <system:String x:Key="Nav_Settings">Ustawienia</system:String>
+    
+    <!-- Chat View -->
+    <system:String x:Key="Chat_NewConversation">Nowa Rozmowa</system:String>
+    <system:String x:Key="Chat_DeleteConversation">Usuń</system:String>
+    <system:String x:Key="Chat_Conversations">Rozmowy</system:String>
+    <system:String x:Key="Chat_TypeMessage">Napisz wiadomość...</system:String>
+    <system:String x:Key="Chat_Send">Wyślij</system:String>
+    <system:String x:Key="Chat_Stop">Stop</system:String>
+    <system:String x:Key="Chat_Thinking">Myślę...</system:String>
+    <system:String x:Key="Chat_Sources">Źródła</system:String>
+    <system:String x:Key="Chat_NoSources">Brak użytych źródeł</system:String>
+    <system:String x:Key="Chat_RagEnabled">RAG Włączony</system:String>
+    <system:String x:Key="Chat_RagDisabled">RAG Wyłączony</system:String>
+    
+    <!-- Knowledge Base -->
+    <system:String x:Key="KB_Title">Baza Wiedzy</system:String>
+    <system:String x:Key="KB_AddDocument">Dodaj Dokument</system:String>
+    <system:String x:Key="KB_DeleteDocument">Usuń</system:String>
+    <system:String x:Key="KB_GenerateEmbeddings">Generuj Embeddingi</system:String>
+    <system:String x:Key="KB_Documents">Dokumenty</system:String>
+    <system:String x:Key="KB_Chunks">fragmentów</system:String>
+    <system:String x:Key="KB_NoDocuments">Brak dokumentów</system:String>
+    <system:String x:Key="KB_DragDrop">Przeciągnij i upuść pliki lub kliknij aby przeglądać</system:String>
+    <system:String x:Key="KB_SupportedFormats">Obsługiwane: PDF, DOCX, TXT, MD, JSON, CSV</system:String>
+    <system:String x:Key="KB_Indexing">Indeksowanie...</system:String>
+    <system:String x:Key="KB_Indexed">Zaindeksowany</system:String>
+    <system:String x:Key="KB_Pending">Oczekuje</system:String>
+    
+    <!-- Document Analysis -->
+    <system:String x:Key="DA_Title">Analiza Dokumentów</system:String>
+    <system:String x:Key="DA_PasteText">Wklej lub wpisz tekst do analizy...</system:String>
+    <system:String x:Key="DA_ImportFile">Importuj Plik</system:String>
+    <system:String x:Key="DA_Analyze">Analizuj</system:String>
+    <system:String x:Key="DA_Clear">Wyczyść</system:String>
+    <system:String x:Key="DA_Summary">Podsumowanie</system:String>
+    <system:String x:Key="DA_KeyPoints">Kluczowe Punkty</system:String>
+    <system:String x:Key="DA_DetectedIntents">Wykryte Intencje</system:String>
+    <system:String x:Key="DA_RedFlags">Czerwone Flagi</system:String>
+    <system:String x:Key="DA_ComplianceCheck">Lista Kontrolna Zgodności</system:String>
+    <system:String x:Key="DA_SuggestedResponse">Sugerowana Odpowiedź</system:String>
+    <system:String x:Key="DA_Analyzing">Analizuję dokument...</system:String>
+    <system:String x:Key="DA_NoIssues">Brak wykrytych problemów</system:String>
+    <system:String x:Key="DA_CopyResponse">Kopiuj Odpowiedź</system:String>
+    <system:String x:Key="DA_RegenerateResponse">Wygeneruj Ponownie</system:String>
+    
+    <!-- RAG Debug Panel -->
+    <system:String x:Key="Debug_Title">Debugowanie RAG</system:String>
+    <system:String x:Key="Debug_Sources">Źródła</system:String>
+    <system:String x:Key="Debug_Metrics">Metryki</system:String>
+    <system:String x:Key="Debug_TopK">Top K</system:String>
+    <system:String x:Key="Debug_Similarity">Podobieństwo</system:String>
+    <system:String x:Key="Debug_RetrievalMode">Tryb Wyszukiwania</system:String>
+    <system:String x:Key="Debug_Vector">Wektorowy</system:String>
+    <system:String x:Key="Debug_Keyword">Słów Kluczowych (FTS)</system:String>
+    <system:String x:Key="Debug_Hybrid">Hybrydowy</system:String>
+    <system:String x:Key="Debug_Latency">Opóźnienia</system:String>
+    <system:String x:Key="Debug_RetrievalTime">Wyszukiwanie</system:String>
+    <system:String x:Key="Debug_GenerationTime">Generowanie</system:String>
+    <system:String x:Key="Debug_TotalTime">Całkowity</system:String>
+    <system:String x:Key="Debug_Score">Wynik</system:String>
+    <system:String x:Key="Debug_Document">Dokument</system:String>
+    <system:String x:Key="Debug_Chunk">Fragment</system:String>
+    
+    <!-- Embeddings -->
+    <system:String x:Key="Emb_Title">Lokalne Embeddingi</system:String>
+    <system:String x:Key="Emb_AvailableModels">Dostępne Modele</system:String>
+    <system:String x:Key="Emb_Download">Pobierz</system:String>
+    <system:String x:Key="Emb_Load">Załaduj</system:String>
+    <system:String x:Key="Emb_Unload">Wyładuj</system:String>
+    <system:String x:Key="Emb_Delete">Usuń</system:String>
+    <system:String x:Key="Emb_Loaded">Załadowany</system:String>
+    <system:String x:Key="Emb_NotLoaded">Nie załadowany</system:String>
+    <system:String x:Key="Emb_Downloading">Pobieranie...</system:String>
+    <system:String x:Key="Emb_TestSimilarity">Test Podobieństwa</system:String>
+    
+    <!-- Settings -->
+    <system:String x:Key="Settings_Title">Ustawienia</system:String>
+    <system:String x:Key="Settings_Language">Język</system:String>
+    <system:String x:Key="Settings_APIConfiguration">Konfiguracja API</system:String>
+    <system:String x:Key="Settings_APIKey">Klucz API</system:String>
+    <system:String x:Key="Settings_Endpoint">Endpoint</system:String>
+    <system:String x:Key="Settings_Model">Model</system:String>
+    <system:String x:Key="Settings_RAGSettings">Ustawienia RAG</system:String>
+    <system:String x:Key="Settings_EnableRAG">Włącz RAG</system:String>
+    <system:String x:Key="Settings_TopK">Top K Wyników</system:String>
+    <system:String x:Key="Settings_MinSimilarity">Minimalne Podobieństwo</system:String>
+    <system:String x:Key="Settings_RetrievalMode">Tryb Wyszukiwania</system:String>
+    <system:String x:Key="Settings_Security">Bezpieczeństwo</system:String>
+    <system:String x:Key="Settings_EncryptData">Szyfruj Dane</system:String>
+    <system:String x:Key="Settings_Save">Zapisz</system:String>
+    <system:String x:Key="Settings_Reset">Resetuj</system:String>
+    <system:String x:Key="Settings_Saved">Ustawienia zapisane</system:String>
+    
+    <!-- Status Bar -->
+    <system:String x:Key="Status_Offline">Tryb Offline</system:String>
+    <system:String x:Key="Status_Online">Online</system:String>
+    <system:String x:Key="Status_Encrypted">Zaszyfrowane</system:String>
+    <system:String x:Key="Status_NotEncrypted">Niezaszyfrowane</system:String>
+    <system:String x:Key="Status_NetworkCalls">Połączenia Sieciowe</system:String>
+    <system:String x:Key="Status_Ready">Gotowe</system:String>
+    <system:String x:Key="Status_Processing">Przetwarzanie...</system:String>
+    
+    <!-- Workspaces -->
+    <system:String x:Key="WS_Title">Przestrzenie Robocze</system:String>
+    <system:String x:Key="WS_Create">Utwórz Przestrzeń</system:String>
+    <system:String x:Key="WS_Delete">Usuń</system:String>
+    <system:String x:Key="WS_Rename">Zmień Nazwę</system:String>
+    <system:String x:Key="WS_Documents">dokumentów</system:String>
+    <system:String x:Key="WS_LastUpdated">Ostatnia aktualizacja</system:String>
+    <system:String x:Key="WS_Default">Domyślna Przestrzeń</system:String>
+    
+    <!-- Common -->
+    <system:String x:Key="Common_Yes">Tak</system:String>
+    <system:String x:Key="Common_No">Nie</system:String>
+    <system:String x:Key="Common_OK">OK</system:String>
+    <system:String x:Key="Common_Cancel">Anuluj</system:String>
+    <system:String x:Key="Common_Close">Zamknij</system:String>
+    <system:String x:Key="Common_Error">Błąd</system:String>
+    <system:String x:Key="Common_Warning">Ostrzeżenie</system:String>
+    <system:String x:Key="Common_Info">Informacja</system:String>
+    <system:String x:Key="Common_Confirm">Potwierdź</system:String>
+    <system:String x:Key="Common_Loading">Ładowanie...</system:String>
+    <system:String x:Key="Common_Copy">Kopiuj</system:String>
+    <system:String x:Key="Common_Copied">Skopiowano!</system:String>
+
+</ResourceDictionary>

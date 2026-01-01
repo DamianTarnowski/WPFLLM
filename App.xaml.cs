@@ -17,16 +17,33 @@ public partial class App : Application
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
 
+        // Initialize database first
         var dbService = Services.GetRequiredService<IDatabaseService>();
         dbService.InitializeAsync().Wait();
+        
+        // Load saved language preference and initialize localization
+        var settingsService = Services.GetRequiredService<ISettingsService>();
+        var appSettings = settingsService.GetSettingsAsync().Result;
+        
+        var localization = Services.GetRequiredService<ILocalizationService>();
+        localization.SetLanguage(appSettings.Language);
+        
+        // Initialize encryption based on settings
+        var encryption = Services.GetRequiredService<IEncryptionService>();
+        encryption.SetEnabled(appSettings.EncryptData);
     }
 
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
+        services.AddSingleton<IEncryptionService, EncryptionService>();
+        services.AddSingleton<IStatusService, StatusService>();
         services.AddSingleton<ILlmService, LlmService>();
         services.AddSingleton<IRagService, RagService>();
+        services.AddSingleton<IIngestionService, IngestionService>();
+        services.AddSingleton<IDocumentAnalysisService, DocumentAnalysisService>();
         services.AddSingleton<IChatService, ChatService>();
         services.AddSingleton<IOpenRouterService, OpenRouterService>();
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();
@@ -37,6 +54,7 @@ public partial class App : Application
 
         services.AddTransient<MainViewModel>();
         services.AddTransient<ChatViewModel>();
+        services.AddTransient<DocumentAnalysisViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<RagViewModel>();
         services.AddTransient<EmbeddingsViewModel>();

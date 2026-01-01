@@ -24,6 +24,12 @@ public class AppSettings
     // Local LLM settings
     public bool UseLocalLlm { get; set; } = false;
     public string LocalLlmModel { get; set; } = "phi-3-mini-4k-instruct";
+    
+    // UI settings
+    public string Language { get; set; } = "en-US";
+    
+    // Security settings
+    public bool EncryptData { get; set; } = false;
 }
 
 public class EmbeddingModelInfo

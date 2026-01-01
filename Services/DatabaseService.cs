@@ -91,6 +91,13 @@ public class DatabaseService : IDatabaseService
                 CreatedAt TEXT NOT NULL,
                 UpdatedAt TEXT NOT NULL
             );
+
+            -- FTS5 virtual table for full-text search on chunks
+            CREATE VIRTUAL TABLE IF NOT EXISTS ChunksFts USING fts5(
+                Content,
+                content='Chunks',
+                content_rowid='Id'
+            );
             """;
         
         await command.ExecuteNonQueryAsync();
@@ -99,6 +106,16 @@ public class DatabaseService : IDatabaseService
         var alterCommand = connection.CreateCommand();
         alterCommand.CommandText = "ALTER TABLE Messages ADD COLUMN Embedding TEXT";
         try { await alterCommand.ExecuteNonQueryAsync(); } catch { /* Column already exists */ }
+
+        // Rebuild FTS index from existing chunks
+        await RebuildFtsIndexAsync(connection);
+    }
+
+    private static async Task RebuildFtsIndexAsync(SqliteConnection connection)
+    {
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = "INSERT OR REPLACE INTO ChunksFts(ChunksFts) VALUES('rebuild')";
+        try { await cmd.ExecuteNonQueryAsync(); } catch { /* FTS rebuild might fail if empty */ }
     }
 
     public async Task<List<Conversation>> GetConversationsAsync()
@@ -385,6 +402,72 @@ public class DatabaseService : IDatabaseService
         command.Parameters.AddWithValue("@embedding", embedding);
         command.Parameters.AddWithValue("@id", chunkId);
         await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task<List<(RagChunk Chunk, double Score)>> SearchChunksFtsAsync(string query, int limit = 20)
+    {
+        using var connection = CreateConnection();
+        var command = connection.CreateCommand();
+        
+        // Escape FTS5 special characters and prepare query
+        var ftsQuery = PrepareFtsQuery(query);
+        
+        command.CommandText = """
+            SELECT c.Id, c.DocumentId, c.Content, c.ChunkIndex, c.Embedding, bm25(ChunksFts) as score
+            FROM ChunksFts fts
+            JOIN Chunks c ON c.Id = fts.rowid
+            WHERE ChunksFts MATCH @query
+            ORDER BY score
+            LIMIT @limit
+            """;
+        command.Parameters.AddWithValue("@query", ftsQuery);
+        command.Parameters.AddWithValue("@limit", limit);
+
+        var results = new List<(RagChunk, double)>();
+        try
+        {
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var chunk = new RagChunk
+                {
+                    Id = reader.GetInt64(0),
+                    DocumentId = reader.GetInt64(1),
+                    Content = reader.GetString(2),
+                    ChunkIndex = reader.GetInt32(3),
+                    Embedding = reader.IsDBNull(4) ? null : reader.GetString(4)
+                };
+                var score = Math.Abs(reader.GetDouble(5)); // BM25 returns negative scores
+                results.Add((chunk, score));
+            }
+        }
+        catch
+        {
+            // FTS might not have data yet
+        }
+        return results;
+    }
+
+    private static string PrepareFtsQuery(string query)
+    {
+        // Split into terms and join with OR for more flexible matching
+        var terms = query.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(t => t.Trim())
+            .Where(t => t.Length > 1)
+            .Select(t => $"\"{t}\"*"); // Prefix matching with quotes for safety
+        
+        return string.Join(" OR ", terms);
+    }
+
+    public async Task<string?> GetDocumentNameAsync(long documentId)
+    {
+        using var connection = CreateConnection();
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT FileName FROM Documents WHERE Id = @id";
+        command.Parameters.AddWithValue("@id", documentId);
+        
+        var result = await command.ExecuteScalarAsync();
+        return result as string;
     }
 
     public async Task<AppSettings> GetSettingsAsync()

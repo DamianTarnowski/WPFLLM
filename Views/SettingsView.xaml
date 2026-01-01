@@ -11,7 +11,32 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="32">
             <StackPanel MaxWidth="700">
             
-                <TextBlock Text="API Configuration" 
+                <!-- Language Selection -->
+                <TextBlock Text="{DynamicResource Settings_Language}" 
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{StaticResource TextBrush}"
+                           Margin="0,0,0,16"/>
+                
+                <Border Background="{StaticResource SurfaceBrush}" 
+                        CornerRadius="8" 
+                        Padding="16"
+                        Margin="0,0,0,32">
+                    <StackPanel>
+                        <TextBlock Text="🌐 Select Language / Wybierz język" 
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0,0,0,12"/>
+                        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                                  SelectedValue="{Binding SelectedLanguage}"
+                                  SelectedValuePath="Code"
+                                  DisplayMemberPath="NativeName"
+                                  Background="{StaticResource SurfaceLightBrush}"
+                                  Foreground="{StaticResource TextBrush}"
+                                  Padding="12,10"
+                                  FontSize="14"/>
+                    </StackPanel>
+                </Border>
+            
+                <TextBlock Text="{DynamicResource Settings_APIConfiguration}" 
                            FontSize="24" FontWeight="Bold"
                            Foreground="{StaticResource TextBrush}"
                            Margin="0,0,0,24"/>
@@ -453,6 +478,40 @@
             <TextBlock Text="{Binding DownloadProgress}" 
                        Foreground="{StaticResource TextMutedBrush}"
                        Margin="0,0,0,24"/>
+
+            <!-- Security Section -->
+            <TextBlock Text="{DynamicResource Settings_Security}" 
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextBrush}"
+                       Margin="0,24,0,16"/>
+
+            <Border Background="{StaticResource SurfaceBrush}" 
+                    CornerRadius="8" 
+                    Padding="16"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <CheckBox IsChecked="{Binding EncryptData}"
+                              Foreground="{StaticResource TextBrush}"
+                              Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔒 " FontSize="16"/>
+                            <TextBlock Text="{DynamicResource Settings_EncryptData}"/>
+                        </StackPanel>
+                    </CheckBox>
+                    
+                    <Border Background="{StaticResource SurfaceLightBrush}" 
+                            CornerRadius="6" 
+                            Padding="12">
+                        <TextBlock Foreground="{StaticResource TextMutedBrush}" 
+                                   TextWrapping="Wrap"
+                                   FontSize="12">
+                            <Run Text="🛡️ "/>
+                            <Run Text="Data is encrypted using AES-256-GCM with keys protected by Windows DPAPI. "/>
+                            <Run Text="Your data never leaves this device and remains encrypted at rest."/>
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </Border>
 
             <!-- Save Button -->
             <Button Content="Save Settings"

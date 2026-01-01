@@ -1,8 +1,23 @@
 # 🏗 Architecture Documentation
 
+> **Version**: 1.0.0 | **Last Updated**: January 2026
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Layer Diagram](#layer-diagram)
+- [Key Components](#key-components)
+- [Data Flow](#data-flow)
+- [Dependency Injection](#dependency-injection)
+- [Database Schema](#database-schema)
+- [Security Architecture](#security-architecture)
+- [External Dependencies](#external-dependencies)
+
+---
+
 ## Overview
 
-WPFLLM follows a clean **MVVM (Model-View-ViewModel)** architecture with **Dependency Injection** for loose coupling and testability.
+WPFLLM follows a clean **MVVM (Model-View-ViewModel)** architecture with **Dependency Injection** for loose coupling and testability. The application is designed with an **offline-first** philosophy, ensuring all core features work without network connectivity.
 
 ## Layer Diagram
 
@@ -242,6 +257,56 @@ CREATE TABLE Settings (
 );
 ```
 
+---
+
+## Security Architecture
+
+WPFLLM implements enterprise-grade security with defense in depth:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Security Layers                           │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                 Application Layer                    │    │
+│  │   - Input validation                                 │    │
+│  │   - Secure API key handling                          │    │
+│  │   - No hardcoded secrets                             │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                 Encryption Layer                     │    │
+│  │   - AES-256-GCM for data encryption                  │    │
+│  │   - Random nonces per encryption                     │    │
+│  │   - Authenticated encryption (integrity)             │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                 Key Management                       │    │
+│  │   - DPAPI for master key protection                  │    │
+│  │   - User-scoped key storage                          │    │
+│  │   - Automatic key generation                         │    │
+│  └─────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                 Storage Layer                        │    │
+│  │   - Encrypted SQLite database                        │    │
+│  │   - Local file system only                           │    │
+│  │   - No cloud sync                                    │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Security Features
+
+| Feature | Implementation |
+|---------|---------------|
+| **Encryption at Rest** | AES-256-GCM with 96-bit nonces |
+| **Key Protection** | Windows DPAPI (user-scoped) |
+| **API Key Storage** | Encrypted in database |
+| **Offline Mode** | Full functionality without network |
+| **Zero Telemetry** | No data sent to external services |
+| **Network Transparency** | Call counter in status bar |
+
+---
+
 ## External Dependencies
 
 | Package | Version | Purpose |
@@ -251,14 +316,34 @@ CREATE TABLE Settings (
 | Microsoft.Data.Sqlite | 9.x | SQLite provider |
 | Dapper | 2.x | Micro-ORM |
 | Microsoft.ML.OnnxRuntime | 1.21.0 | ONNX inference |
-| Microsoft.SemanticKernel.Connectors.Onnx | 1.55.0-alpha | ONNX embeddings |
-| **hf_tokenizer.dll** | - | Rust tokenizer (HuggingFace) |
+| FluentAssertions | 8.x | Test assertions |
+| NSubstitute | 5.x | Mocking framework |
+| **hf_tokenizer.dll** | Custom | Rust tokenizer (HuggingFace) |
+
+---
 
 ## Future Improvements
 
+### Planned Features
+
 - [ ] Plugin system for custom tools
-- [ ] Voice input/output
-- [ ] Image understanding (GPT-4V)
-- [ ] Conversation export/import
-- [ ] Custom themes
-- [ ] Multi-language UI
+- [ ] Voice input/output (Whisper integration)
+- [ ] Image understanding (GPT-4V, Claude Vision)
+- [ ] Conversation export/import (JSON, Markdown)
+- [ ] Custom themes and UI customization
+- [ ] Additional languages (DE, FR, ES)
+
+### Technical Debt
+
+- [ ] Migrate to source generators for DI
+- [ ] Add OpenTelemetry instrumentation
+- [ ] Implement connection pooling for SQLite
+- [ ] Add health check endpoints
+
+---
+
+## Related Documentation
+
+- [Embeddings System](EMBEDDINGS.md) - Local embedding models and Rust tokenizer
+- [Contributing](../CONTRIBUTING.md) - How to contribute to the project
+- [Changelog](../CHANGELOG.md) - Version history and release notes
