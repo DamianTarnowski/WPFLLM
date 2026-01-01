@@ -41,8 +41,9 @@ public partial class RagViewModel : ObservableObject
     {
         var dialog = new OpenFileDialog
         {
-            Filter = "Text files (*.txt;*.md;*.json;*.csv)|*.txt;*.md;*.json;*.csv|All files (*.*)|*.*",
-            Multiselect = true
+            Filter = "Dokumenty tekstowe (*.txt;*.md;*.json;*.csv;*.xml;*.html)|*.txt;*.md;*.markdown;*.json;*.csv;*.xml;*.html;*.htm|All files (*.*)|*.*",
+            Multiselect = true,
+            Title = "Wybierz pliki do bazy wiedzy RAG"
         };
 
         if (dialog.ShowDialog() == true)

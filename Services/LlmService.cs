@@ -136,7 +136,10 @@ public class LlmService : ILlmService
         return null;
     }
 
-    public async Task<float[]> GetEmbeddingAsync(string text, CancellationToken cancellationToken = default)
+    public Task<float[]> GetEmbeddingAsync(string text, CancellationToken cancellationToken = default)
+        => GetEmbeddingAsync(text, isQuery: true, cancellationToken);
+
+    public async Task<float[]> GetEmbeddingAsync(string text, bool isQuery, CancellationToken cancellationToken = default)
     {
         var settings = await _settingsService.GetSettingsAsync();
 
@@ -149,7 +152,7 @@ public class LlmService : ILlmService
                 {
                     await _localEmbeddingService.InitializeAsync(settings.LocalEmbeddingModel);
                 }
-                return await _localEmbeddingService.GetEmbeddingAsync(text, cancellationToken);
+                return await _localEmbeddingService.GetEmbeddingAsync(text, isQuery, cancellationToken);
             }
             catch
             {
