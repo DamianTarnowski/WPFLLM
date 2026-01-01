@@ -35,8 +35,27 @@
 ### 📚 **Advanced RAG System**
 - **Hybrid Retrieval**: Vector search + FTS5 keyword search with RRF fusion
 - Import documents (.txt, .md, .json, .csv, .pdf, .docx)
-- Debug panel showing topK, similarity scores, retrieval mode
-- Latency breakdown: embedding time, retrieval time, total time
+- Configurable TopK, similarity threshold, retrieval mode
+- Full pipeline transparency with Flight Recorder
+
+### ✈️ **RAG Debug Panel (Flight Recorder)**
+The "black box" for your RAG pipeline - understand exactly why the model responded the way it did:
+
+| Tab | What it shows |
+|-----|---------------|
+| **📄 Sources** | Selected chunks with Vec/KW/RRF scores and content preview |
+| **📊 Candidates** | All evaluated chunks (not just selected), with ranking and token counts |
+| **⏱️ Timings** | Visual breakdown: EmbedQuery, VectorSearch, KeywordSearch, Merge+Rerank |
+
+**Summary Cards** show at a glance:
+- Total pipeline time (ms)
+- Selected/Total chunks ratio
+- Vector matches count
+- Keyword matches count
+
+```
+Formula: RRF(k=60) - Reciprocal Rank Fusion combining vector and keyword results
+```
 
 ### 📄 **Document Analysis Mode**
 - Analyze documents and transcripts for insights

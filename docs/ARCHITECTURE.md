@@ -80,25 +80,60 @@ public interface ILlmService
 - Error handling and retry logic
 
 #### `RagService`
-Implements Retrieval Augmented Generation pipeline.
+Implements Retrieval Augmented Generation pipeline with full debug tracing.
 
 ```csharp
 public interface IRagService
 {
-    Task<List<string>> GetRelevantChunksAsync(
+    Task<RetrievalResult> RetrieveAsync(
         string query, 
-        int topK = 3);
+        int topK = 5,
+        double minSimilarity = 0.7,
+        RetrievalMode mode = RetrievalMode.Hybrid);
     
-    Task GenerateEmbeddingsAsync(
-        IProgress<double> progress);
+    Task<(RetrievalResult Result, RagTrace Trace)> RetrieveWithTraceAsync(
+        string query, ...);
 }
 ```
 
 **Features:**
 - Document chunking with overlap
-- Cosine similarity search
+- **Hybrid retrieval**: Vector + FTS5 keyword search
+- **RRF fusion**: Reciprocal Rank Fusion (k=60)
+- Full pipeline tracing with `RagTrace`
 - Configurable chunk size and overlap
-- Progress reporting
+
+#### `RagTrace` (Flight Recorder)
+Captures complete debug information for each RAG query:
+
+```csharp
+public sealed class RagTrace
+{
+    public string Query { get; init; }
+    public List<RagChunkCandidate> Candidates { get; }  // All evaluated
+    public List<RagTiming> Timings { get; }             // Pipeline steps
+    public RagTokenBreakdown? Tokens { get; set; }      // Token analysis
+    public string FusionFormula { get; set; }           // "RRF(k=60)"
+    public long TotalTimeMs => Timings.Sum(t => t.ElapsedMs);
+}
+```
+
+**Timing measurement with extensions:**
+```csharp
+// Automatic timing capture
+var embedding = await trace.MeasureAsync("EmbedQuery", 
+    () => _llmService.GetEmbeddingAsync(query));
+```
+
+**What gets traced:**
+| Step | Description |
+|------|-------------|
+| EmbedQuery | Query embedding generation time |
+| LoadChunks | Database chunk loading |
+| VectorSearch | Cosine similarity computation |
+| KeywordSearch | FTS5 full-text search |
+| Merge+Rerank | RRF fusion and sorting |
+| BuildTrace | Debug info construction |
 
 #### `LocalEmbeddingService`
 Runs ONNX embedding models locally with Rust FFI tokenizer.
