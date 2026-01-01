@@ -2,6 +2,9 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using UglyToad.PdfPig;
 using WPFLLM.Models;
 
 namespace WPFLLM.Services;
@@ -31,7 +34,9 @@ public class RagService : IRagService
         {
             ".txt" or ".md" or ".markdown" or ".csv" or ".json" or ".xml" or ".html" or ".htm" 
                 => await File.ReadAllTextAsync(filePath),
-            _ => throw new NotSupportedException($"Unsupported file type: {extension}. Supported: .txt, .md, .csv, .json, .xml, .html")
+            ".pdf" => ExtractTextFromPdf(filePath),
+            ".docx" => ExtractTextFromDocx(filePath),
+            _ => throw new NotSupportedException($"Unsupported file type: {extension}. Supported: .txt, .md, .csv, .json, .xml, .html, .pdf, .docx")
         };
         
         // Clean up content
@@ -45,6 +50,39 @@ public class RagService : IRagService
         await _database.AddChunksAsync(document.Id, chunks);
         
         return document;
+    }
+    
+    private static string ExtractTextFromPdf(string filePath)
+    {
+        var sb = new StringBuilder();
+        using var document = PdfDocument.Open(filePath);
+        
+        foreach (var page in document.GetPages())
+        {
+            sb.AppendLine(page.Text);
+        }
+        
+        return sb.ToString();
+    }
+    
+    private static string ExtractTextFromDocx(string filePath)
+    {
+        var sb = new StringBuilder();
+        using var doc = WordprocessingDocument.Open(filePath, false);
+        
+        var body = doc.MainDocumentPart?.Document.Body;
+        if (body == null) return string.Empty;
+        
+        foreach (var para in body.Elements<Paragraph>())
+        {
+            var text = para.InnerText;
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                sb.AppendLine(text);
+            }
+        }
+        
+        return sb.ToString();
     }
     
     private static string CleanText(string text)
