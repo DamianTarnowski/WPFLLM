@@ -39,6 +39,9 @@ public partial class SettingsViewModel : ObservableObject
     private int _ragTopK = 3;
 
     [ObservableProperty]
+    private double _ragMinSimilarity = 0.75;
+
+    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     [ObservableProperty]
@@ -120,6 +123,7 @@ public partial class SettingsViewModel : ObservableObject
         SystemPrompt = settings.SystemPrompt;
         UseRag = settings.UseRag;
         RagTopK = settings.RagTopK;
+        RagMinSimilarity = settings.RagMinSimilarity;
     }
 
     [RelayCommand]
@@ -362,7 +366,8 @@ public partial class SettingsViewModel : ObservableObject
             MaxTokens = MaxTokens,
             SystemPrompt = SystemPrompt,
             UseRag = UseRag,
-            RagTopK = RagTopK
+            RagTopK = RagTopK,
+            RagMinSimilarity = RagMinSimilarity
         };
 
         await _settingsService.SaveSettingsAsync(settings);

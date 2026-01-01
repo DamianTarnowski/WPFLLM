@@ -373,14 +373,39 @@
 
             <!-- RAG Top K -->
             <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                <Run Text="Number of context chunks: "/>
+                <Run Text="Liczba kontekstowych fragmentów: "/>
                 <Run Text="{Binding RagTopK}"/>
             </TextBlock>
             <Slider Value="{Binding RagTopK}"
                     Minimum="1" Maximum="10" 
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                    Margin="0,0,0,24"/>
+                    Margin="0,0,0,16"/>
+
+            <!-- RAG Min Similarity -->
+            <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
+                <Run Text="Minimalne podobieństwo: "/>
+                <Run Text="{Binding RagMinSimilarity, StringFormat=P0}"/>
+            </TextBlock>
+            <Slider Value="{Binding RagMinSimilarity}"
+                    Minimum="0.60" Maximum="0.95" 
+                    TickFrequency="0.05"
+                    IsSnapToTickEnabled="True"
+                    Margin="0,0,0,8"/>
+            <Border Background="{StaticResource SurfaceLightBrush}" 
+                    CornerRadius="6" 
+                    Padding="12"
+                    Margin="0,0,0,24">
+                <TextBlock Foreground="{StaticResource TextMutedBrush}" 
+                           TextWrapping="Wrap"
+                           FontSize="12">
+                    <Run Text="💡 "/>
+                    <Run Text="Próg filtruje fragmenty o niskim podobieństwie. "/>
+                    <Run Text="60% = więcej wyników (mniej precyzyjne), "/>
+                    <Run Text="95% = mniej wyników (bardzo precyzyjne). "/>
+                    <Run Text="Zalecane: 70-80% dla ogólnego użycia."/>
+                </TextBlock>
+            </Border>
 
             <!-- Save Button -->
             <Button Content="Save Settings"

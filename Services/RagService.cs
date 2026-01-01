@@ -98,7 +98,7 @@ public class RagService : IRagService
 
     public Task DeleteDocumentAsync(long documentId) => _database.DeleteDocumentAsync(documentId);
 
-    public async Task<string> GetRelevantContextAsync(string query, int topK = 3)
+    public async Task<string> GetRelevantContextAsync(string query, int topK = 3, double minSimilarity = 0.75)
     {
         var queryEmbedding = await _llmService.GetEmbeddingAsync(query);
         if (queryEmbedding.Length == 0) return string.Empty;
@@ -117,7 +117,11 @@ public class RagService : IRagService
             if (embedding != null)
             {
                 var score = CosineSimilarity(queryEmbedding, embedding);
-                scored.Add((chunk, score));
+                // Filter by minimum similarity threshold
+                if (score >= minSimilarity)
+                {
+                    scored.Add((chunk, score));
+                }
             }
         }
 

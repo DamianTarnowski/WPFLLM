@@ -14,6 +14,7 @@ public class AppSettings
     public string SystemPrompt { get; set; } = "You are a helpful assistant.";
     public bool UseRag { get; set; } = false;
     public int RagTopK { get; set; } = 3;
+    public double RagMinSimilarity { get; set; } = 0.75; // 75% default, range 60-95%
     public bool SidebarCollapsed { get; set; } = false;
     
     // Embedding settings

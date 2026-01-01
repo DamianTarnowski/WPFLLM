@@ -52,7 +52,7 @@ public class ChatService : IChatService
 
         if (settings.UseRag)
         {
-            ragContext = await _ragService.GetRelevantContextAsync(userMessage, settings.RagTopK);
+            ragContext = await _ragService.GetRelevantContextAsync(userMessage, settings.RagTopK, settings.RagMinSimilarity);
         }
 
         var messages = await _database.GetMessagesAsync(conversationId);
