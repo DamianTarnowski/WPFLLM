@@ -410,10 +410,10 @@
             </Border>
         </Grid>
 
-        <!-- RAG Debug Panel -->
+        <!-- RAG Debug Panel - Flight Recorder -->
         <Border Grid.Column="3" 
                 Background="{StaticResource SurfaceBrush}"
-                Width="380"
+                Width="420"
                 Visibility="{Binding ShowDebugPanel, Converter={StaticResource BoolToVis}}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -423,168 +423,266 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
-                <Border Background="{StaticResource SurfaceLightBrush}" Padding="16,12">
+                <Border Background="{StaticResource SurfaceLightBrush}" Padding="12,10">
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📊 " FontSize="16"/>
-                            <TextBlock Text="{DynamicResource Debug_Title}" 
-                                       FontSize="16" 
+                            <TextBlock Text="✈️ " FontSize="14"/>
+                            <TextBlock Text="RAG Debug" 
+                                       FontSize="14" 
                                        FontWeight="Bold"
                                        Foreground="{StaticResource TextBrush}"/>
-                        </StackPanel>
-                        <Button Content="✕" 
-                                HorizontalAlignment="Right"
-                                Style="{StaticResource SecondaryButton}"
-                                Command="{Binding ToggleDebugPanelCommand}"
-                                Padding="8,4"/>
-                    </Grid>
-                </Border>
-
-                <!-- Metrics -->
-                <Border Grid.Row="1" Padding="16,12" BorderThickness="0,0,0,1" BorderBrush="{StaticResource SurfaceLightBrush}">
-                    <StackPanel>
-                        <TextBlock Text="{DynamicResource Debug_Metrics}" 
-                                   FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   Margin="0,0,0,8"/>
-                        
-                        <!-- Retrieval Mode Selector -->
-                        <Grid Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{DynamicResource Debug_RetrievalMode}" 
+                            <TextBlock Text=" (Flight Recorder)" 
+                                       FontSize="11"
                                        Foreground="{StaticResource TextMutedBrush}"
                                        VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Grid.Column="1"
-                                      ItemsSource="{Binding RetrievalModes}"
+                                       Margin="4,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <ComboBox ItemsSource="{Binding RetrievalModes}"
                                       SelectedItem="{Binding SelectedRetrievalMode}"
                                       Background="{StaticResource SurfaceLightBrush}"
                                       Foreground="{StaticResource TextBrush}"
-                                      Padding="8,4"/>
-                        </Grid>
-
-                        <!-- Latency Breakdown -->
-                        <Border Background="{StaticResource SurfaceLightBrush}" 
-                                CornerRadius="6" 
-                                Padding="12"
-                                Visibility="{Binding LastRetrievalResult, Converter={StaticResource NullToVis}}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Text="{DynamicResource Debug_Latency}" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" Grid.ColumnSpan="2" Margin="0,0,0,6"/>
-                                
-                                <TextBlock Grid.Row="1" Text="Embedding:" Foreground="{StaticResource TextMutedBrush}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LastRetrievalResult.Metrics.EmbeddingTimeMs, StringFormat={}{0}ms}" Foreground="{StaticResource PrimaryBrush}"/>
-                                
-                                <TextBlock Grid.Row="2" Text="{DynamicResource Debug_RetrievalTime}" Foreground="{StaticResource TextMutedBrush}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LastRetrievalResult.Metrics.RetrievalTimeMs, StringFormat={}{0}ms}" Foreground="{StaticResource PrimaryBrush}"/>
-                                
-                                <TextBlock Grid.Row="3" Text="{DynamicResource Debug_TotalTime}" Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastRetrievalResult.Metrics.TotalTimeMs, StringFormat={}{0}ms}" Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold"/>
-
-                                <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Vec: " Foreground="{StaticResource TextMutedBrush}" FontSize="11"/>
-                                    <TextBlock Text="{Binding LastRetrievalResult.Metrics.VectorMatches}" Foreground="{StaticResource TextBrush}" FontSize="11"/>
-                                    <TextBlock Text=" | KW: " Foreground="{StaticResource TextMutedBrush}" FontSize="11"/>
-                                    <TextBlock Text="{Binding LastRetrievalResult.Metrics.KeywordMatches}" Foreground="{StaticResource TextBrush}" FontSize="11"/>
-                                    <TextBlock Text=" | Final: " Foreground="{StaticResource TextMutedBrush}" FontSize="11"/>
-                                    <TextBlock Text="{Binding LastRetrievalResult.Metrics.FinalResults}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="SemiBold"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </StackPanel>
+                                      Padding="6,2"
+                                      FontSize="11"
+                                      Margin="0,0,8,0"/>
+                            <Button Content="✕" 
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding ToggleDebugPanelCommand}"
+                                    Padding="6,2"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Sources List -->
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <!-- Summary Cards -->
+                <Border Grid.Row="1" Padding="12,8" BorderThickness="0,0,0,1" BorderBrush="{StaticResource SurfaceLightBrush}"
+                        Visibility="{Binding LastRagTrace, Converter={StaticResource NullToVis}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Total Time -->
+                        <Border Background="{StaticResource SurfaceLightBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,4,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding LastRagTrace.TotalTimeMs, StringFormat={}{0}ms}" 
+                                           FontSize="16" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Total" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- TopK / Selected -->
+                        <Border Grid.Column="1" Background="{StaticResource SurfaceLightBrush}" CornerRadius="6" Padding="8,6" Margin="2,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextBrush}" HorizontalAlignment="Center">
+                                    <Run Text="{Binding LastRagTrace.IncludedChunks, Mode=OneWay}"/>
+                                    <Run Text="/" Foreground="{StaticResource TextMutedBrush}"/>
+                                    <Run Text="{Binding LastRagTrace.TotalCandidates, Mode=OneWay}" Foreground="{StaticResource TextMutedBrush}"/>
+                                </TextBlock>
+                                <TextBlock Text="Selected" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Vec Matches -->
+                        <Border Grid.Column="2" Background="{StaticResource SurfaceLightBrush}" CornerRadius="6" Padding="8,6" Margin="2,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding LastRetrievalResult.Metrics.VectorMatches}" 
+                                           FontSize="16" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Vec" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- KW Matches -->
+                        <Border Grid.Column="3" Background="{StaticResource SurfaceLightBrush}" CornerRadius="6" Padding="8,6" Margin="4,0,0,0">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding LastRetrievalResult.Metrics.KeywordMatches}" 
+                                           FontSize="16" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Center"/>
+                                <TextBlock Text="KW" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
 
-                    <TextBlock Text="{DynamicResource Debug_Sources}" 
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource TextBrush}"
-                               Margin="16,12,16,8"/>
-
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="16,0">
-                        <ItemsControl ItemsSource="{Binding RetrievedChunks}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="{StaticResource SurfaceLightBrush}"
-                                            CornerRadius="6"
-                                            Padding="12"
-                                            Margin="0,0,0,8">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-
-                                            <!-- Document name and scores -->
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="📄 " FontSize="12"/>
-                                                <TextBlock Text="{Binding DocumentName}"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="{StaticResource PrimaryBrush}"
-                                                           FontSize="12"/>
-                                                <TextBlock Text="{Binding ChunkIndex, StringFormat=' [#{0}]'}"
-                                                           Foreground="{StaticResource TextMutedBrush}"
-                                                           FontSize="11"/>
-                                            </StackPanel>
-
-                                            <!-- Scores -->
-                                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,4,0,0">
-                                                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="4" Padding="6,2" Margin="0,0,4,0">
-                                                    <TextBlock FontSize="10">
-                                                        <Run Text="Vec: " Foreground="{StaticResource TextMutedBrush}"/>
-                                                        <Run Text="{Binding VectorScoreText, Mode=OneWay}" Foreground="{StaticResource TextBrush}"/>
-                                                    </TextBlock>
+                <!-- TabControl -->
+                <TabControl Grid.Row="2" 
+                            SelectedIndex="{Binding SelectedDebugTab}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+                            <Setter Property="Padding" Value="12,8"/>
+                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border x:Name="Border" Background="Transparent" Padding="{TemplateBinding Padding}" BorderThickness="0,0,0,2" BorderBrush="Transparent">
+                                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
+                    
+                    <!-- Tab: Sources (Selected chunks) -->
+                    <TabItem Header="📄 Sources">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,8">
+                            <ItemsControl ItemsSource="{Binding RetrievedChunks}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{StaticResource SurfaceLightBrush}" CornerRadius="6" Padding="10" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="📄 " FontSize="11"/>
+                                                    <TextBlock Text="{Binding DocumentName}" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" FontSize="11"/>
+                                                    <TextBlock Text="{Binding ChunkIndex, StringFormat=' [#{0}]'}" Foreground="{StaticResource TextMutedBrush}" FontSize="10"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <Border Background="{StaticResource BackgroundBrush}" CornerRadius="3" Padding="4,1" Margin="0,0,3,0">
+                                                        <TextBlock FontSize="9">
+                                                            <Run Text="Vec:" Foreground="{StaticResource TextMutedBrush}"/>
+                                                            <Run Text="{Binding VectorScoreText, Mode=OneWay}" Foreground="{StaticResource TextBrush}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <Border Background="{StaticResource BackgroundBrush}" CornerRadius="3" Padding="4,1" Margin="0,0,3,0">
+                                                        <TextBlock FontSize="9">
+                                                            <Run Text="KW:" Foreground="{StaticResource TextMutedBrush}"/>
+                                                            <Run Text="{Binding KeywordScoreText, Mode=OneWay}" Foreground="{StaticResource TextBrush}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="3" Padding="4,1" Opacity="0.9">
+                                                        <TextBlock FontSize="9" Foreground="White">
+                                                            <Run Text="RRF:"/>
+                                                            <Run Text="{Binding FusedScoreText, Mode=OneWay}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                </StackPanel>
+                                                <TextBlock Grid.Row="2" Text="{Binding Content}" TextWrapping="Wrap" Foreground="{StaticResource TextBrush}" FontSize="10" MaxHeight="60" Margin="0,6,0,0" ToolTip="{Binding FullContent}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </TabItem>
+                    
+                    <!-- Tab: Candidates (All evaluated) -->
+                    <TabItem Header="📊 Candidates">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Formula -->
+                            <Border Background="{StaticResource SurfaceLightBrush}" Padding="8,4" Margin="12,8,12,4">
+                                <TextBlock FontSize="10" Foreground="{StaticResource TextMutedBrush}">
+                                    <Run Text="Formula: " FontWeight="SemiBold"/>
+                                    <Run Text="{Binding LastRagTrace.FusionFormula, Mode=OneWay, FallbackValue='RRF(k=60)'}"/>
+                                </TextBlock>
+                            </Border>
+                            
+                            <!-- Candidates Table -->
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="12,4">
+                                <ItemsControl ItemsSource="{Binding AllCandidates}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8,6" Margin="0,0,0,2" CornerRadius="4">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Included}" Value="True">
+                                                                <Setter Property="Background" Value="#1A3B82F6"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="24"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="50"/>
+                                                        <ColumnDefinition Width="50"/>
+                                                        <ColumnDefinition Width="55"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="20"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Rank, StringFormat='#{0}'}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding SourceName}" FontSize="10" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Preview}"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding VectorScoreText}" FontSize="10" Foreground="#10B981" HorizontalAlignment="Right"/>
+                                                    <TextBlock Grid.Column="3" Text="{Binding KeywordScoreText}" FontSize="10" Foreground="#F59E0B" HorizontalAlignment="Right"/>
+                                                    <TextBlock Grid.Column="4" Text="{Binding FinalScoreText}" FontSize="10" Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                                    <TextBlock Grid.Column="5" Text="{Binding TokensText}" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
+                                                    <TextBlock Grid.Column="6" Text="{Binding IncludedIcon}" FontSize="10" Foreground="#10B981" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                    
+                    <!-- Tab: Timings -->
+                    <TabItem Header="⏱️ Timings">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,8">
+                            <StackPanel>
+                                <TextBlock Text="Pipeline Timing Breakdown" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" FontSize="12" Margin="0,0,0,12"/>
+                                <ItemsControl ItemsSource="{Binding Timings}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" FontSize="11" Foreground="{StaticResource TextBrush}"/>
+                                                <Border Grid.Column="1" Background="{StaticResource SurfaceLightBrush}" CornerRadius="2" Height="16" HorizontalAlignment="Left" Width="{Binding BarWidth}">
+                                                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="2" Opacity="0.8"/>
                                                 </Border>
-                                                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="4" Padding="6,2" Margin="0,0,4,0">
-                                                    <TextBlock FontSize="10">
-                                                        <Run Text="KW: " Foreground="{StaticResource TextMutedBrush}"/>
-                                                        <Run Text="{Binding KeywordScoreText, Mode=OneWay}" Foreground="{StaticResource TextBrush}"/>
-                                                    </TextBlock>
-                                                </Border>
-                                                <Border Background="{StaticResource PrimaryBrush}" CornerRadius="4" Padding="6,2" Opacity="0.9">
-                                                    <TextBlock FontSize="10" Foreground="White">
-                                                        <Run Text="RRF: "/>
-                                                        <Run Text="{Binding FusedScoreText, Mode=OneWay}"/>
-                                                    </TextBlock>
-                                                </Border>
-                                            </StackPanel>
-
-                                            <!-- Content preview -->
-                                            <TextBlock Grid.Row="2"
-                                                       Text="{Binding Content}"
-                                                       TextWrapping="Wrap"
-                                                       Foreground="{StaticResource TextBrush}"
-                                                       FontSize="11"
-                                                       MaxHeight="80"
-                                                       Margin="0,8,0,0"
-                                                       ToolTip="{Binding FullContent}"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </Grid>
+                                                <TextBlock Grid.Column="2" Text="{Binding ElapsedText}" FontSize="11" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                
+                                <!-- Total -->
+                                <Border BorderThickness="0,1,0,0" BorderBrush="{StaticResource SurfaceLightBrush}" Margin="0,8,0,0" Padding="0,8,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="TOTAL" FontSize="11" Foreground="{StaticResource TextBrush}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding LastRagTrace.TotalTimeMs, StringFormat={}{0}ms}" FontSize="11" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Right" FontWeight="Bold"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Border>
     </Grid>

@@ -260,7 +260,26 @@ public class RagService : IRagService
 
     public async Task<RetrievalResult> RetrieveAsync(string query, int topK = 5, double minSimilarity = 0.7, RetrievalMode mode = RetrievalMode.Hybrid)
     {
-        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var (result, _) = await RetrieveWithTraceAsync(query, topK, minSimilarity, mode);
+        return result;
+    }
+
+    public async Task<(RetrievalResult Result, RagTrace Trace)> RetrieveWithTraceAsync(
+        string query, 
+        int topK = 5, 
+        double minSimilarity = 0.7, 
+        RetrievalMode mode = RetrievalMode.Hybrid,
+        CancellationToken cancellationToken = default)
+    {
+        var trace = new RagTrace 
+        { 
+            Query = query,
+            RetrievalMode = mode,
+            FusionFormula = "RRF(k=60)"
+        };
+        
+        var tokenCounter = new EstimationTokenCounter();
+        
         var result = new RetrievalResult
         {
             Metrics = new RetrievalMetrics
@@ -273,58 +292,92 @@ public class RagService : IRagService
 
         var vectorResults = new List<(RagChunk Chunk, double Score)>();
         var keywordResults = new List<(RagChunk Chunk, double Score)>();
-        
-        var embeddingStart = sw.ElapsedMilliseconds;
         float[] queryEmbedding = [];
+        List<RagChunk> allChunks = [];
         
-        // Vector search
+        // Vector search with timing
         if (mode is RetrievalMode.Vector or RetrievalMode.Hybrid)
         {
-            queryEmbedding = await _llmService.GetEmbeddingAsync(query);
-            result.Metrics.EmbeddingTimeMs = sw.ElapsedMilliseconds - embeddingStart;
+            queryEmbedding = await trace.MeasureAsync("EmbedQuery", async () => 
+                await _llmService.GetEmbeddingAsync(query, isQuery: true, cancellationToken));
             
             if (queryEmbedding.Length > 0)
             {
-                var allChunks = await _database.GetAllChunksAsync();
+                allChunks = await trace.MeasureAsync("LoadChunks", async () => 
+                    await _database.GetAllChunksAsync());
                 result.Metrics.TotalChunksSearched = allChunks.Count;
                 
-                foreach (var chunk in allChunks.Where(c => !string.IsNullOrEmpty(c.Embedding)))
+                trace.Measure("VectorSearch", () =>
                 {
-                    var embedding = JsonSerializer.Deserialize<float[]>(chunk.Embedding!);
-                    if (embedding != null)
+                    foreach (var chunk in allChunks.Where(c => !string.IsNullOrEmpty(c.Embedding)))
                     {
-                        var score = CosineSimilarity(queryEmbedding, embedding);
-                        if (score >= minSimilarity)
+                        var embedding = JsonSerializer.Deserialize<float[]>(chunk.Embedding!);
+                        if (embedding != null)
                         {
+                            var score = CosineSimilarity(queryEmbedding, embedding);
                             vectorResults.Add((chunk, score));
                         }
                     }
-                }
-                result.Metrics.VectorMatches = vectorResults.Count;
+                });
+                result.Metrics.VectorMatches = vectorResults.Count(v => v.Score >= minSimilarity);
             }
         }
 
-        // Keyword search (FTS5)
+        // Keyword search (FTS5) with timing
         if (mode is RetrievalMode.Keyword or RetrievalMode.Hybrid)
         {
-            keywordResults = await _database.SearchChunksFtsAsync(query, topK * 2);
+            keywordResults = await trace.MeasureAsync("KeywordSearch", async () => 
+                await _database.SearchChunksFtsAsync(query, topK * 3));
             result.Metrics.KeywordMatches = keywordResults.Count;
             
             if (result.Metrics.TotalChunksSearched == 0)
             {
-                var allChunks = await _database.GetAllChunksAsync();
+                allChunks = await _database.GetAllChunksAsync();
                 result.Metrics.TotalChunksSearched = allChunks.Count;
             }
         }
 
-        // Fuse results using RRF (Reciprocal Rank Fusion)
-        var fusedResults = FuseResults(vectorResults, keywordResults, mode);
+        // Fuse results using RRF with timing
+        List<RetrievedChunk> fusedResults = [];
+        trace.Measure("Merge+Rerank", () =>
+        {
+            fusedResults = FuseResultsWithAllCandidates(vectorResults, keywordResults, mode, minSimilarity);
+        });
         
-        // Get top K results
-        var topResults = fusedResults
+        // Sort and select top K
+        var sortedResults = fusedResults
             .OrderByDescending(x => x.FusedScore)
-            .Take(topK)
             .ToList();
+        
+        var topResults = sortedResults.Take(topK).ToList();
+        var selectedIds = topResults.Select(r => r.ChunkId).ToHashSet();
+
+        // Build trace candidates (all evaluated chunks)
+        trace.Measure("BuildTrace", () =>
+        {
+            int rank = 0;
+            foreach (var item in sortedResults.Take(topK * 2)) // Show top 2x candidates
+            {
+                rank++;
+                var preview = item.Content.Length > 400 
+                    ? item.Content[..400] + "…" 
+                    : item.Content;
+                
+                trace.Candidates.Add(new RagChunkCandidate(
+                    ChunkId: item.ChunkId,
+                    SourceName: item.DocumentName,
+                    Section: null,
+                    ChunkIndex: item.ChunkIndex,
+                    VectorScore: (float)item.VectorScore,
+                    KeywordScore: (float)item.KeywordScore,
+                    FinalScore: (float)item.FusedScore,
+                    TokenCount: tokenCounter.CountTokens(item.Content),
+                    Included: selectedIds.Contains(item.ChunkId),
+                    Preview: preview,
+                    MatchedTerms: item.MatchedTerms
+                ) { Rank = rank });
+            }
+        });
 
         // Enrich with document names
         foreach (var item in topResults)
@@ -332,12 +385,97 @@ public class RagService : IRagService
             item.DocumentName = await _database.GetDocumentNameAsync(item.DocumentId) ?? "Unknown";
         }
 
+        // Update candidate source names after enrichment
+        foreach (var candidate in trace.Candidates)
+        {
+            var matchingResult = topResults.FirstOrDefault(r => r.ChunkId == candidate.ChunkId);
+            if (matchingResult != null && candidate.SourceName != matchingResult.DocumentName)
+            {
+                // Create new candidate with updated source name
+                var index = trace.Candidates.IndexOf(candidate);
+                trace.Candidates[index] = candidate with { SourceName = matchingResult.DocumentName };
+            }
+        }
+
         result.Chunks = topResults;
         result.Metrics.FinalResults = topResults.Count;
-        result.Metrics.RetrievalTimeMs = sw.ElapsedMilliseconds - result.Metrics.EmbeddingTimeMs;
-        result.Metrics.TotalTimeMs = sw.ElapsedMilliseconds;
+        
+        // Calculate timing metrics
+        var embeddingTime = trace.Timings.FirstOrDefault(t => t.Name == "EmbedQuery")?.ElapsedMs ?? 0;
+        result.Metrics.EmbeddingTimeMs = embeddingTime;
+        result.Metrics.RetrievalTimeMs = trace.TotalTimeMs - embeddingTime;
+        result.Metrics.TotalTimeMs = trace.TotalTimeMs;
 
-        return result;
+        return (result, trace);
+    }
+
+    private static List<RetrievedChunk> FuseResultsWithAllCandidates(
+        List<(RagChunk Chunk, double Score)> vectorResults,
+        List<(RagChunk Chunk, double Score)> keywordResults,
+        RetrievalMode mode,
+        double minSimilarity)
+    {
+        const double k = 60.0; // RRF constant
+        var fusedScores = new Dictionary<long, RetrievedChunk>();
+
+        // Process vector results (include all for trace, filter later)
+        if (mode is RetrievalMode.Vector or RetrievalMode.Hybrid)
+        {
+            var ranked = vectorResults.OrderByDescending(x => x.Score).ToList();
+            for (int i = 0; i < ranked.Count; i++)
+            {
+                var (chunk, score) = ranked[i];
+                
+                // Only contribute to RRF if above threshold
+                var rrfScore = score >= minSimilarity ? 1.0 / (k + i + 1) : 0;
+                
+                if (!fusedScores.TryGetValue(chunk.Id, out var existing))
+                {
+                    existing = new RetrievedChunk
+                    {
+                        ChunkId = chunk.Id,
+                        DocumentId = chunk.DocumentId,
+                        Content = chunk.Content,
+                        ChunkIndex = chunk.ChunkIndex
+                    };
+                    fusedScores[chunk.Id] = existing;
+                }
+                
+                existing.VectorScore = score;
+                existing.FusedScore += rrfScore;
+            }
+        }
+
+        // Process keyword results
+        if (mode is RetrievalMode.Keyword or RetrievalMode.Hybrid)
+        {
+            var ranked = keywordResults.OrderByDescending(x => x.Score).ToList();
+            for (int i = 0; i < ranked.Count; i++)
+            {
+                var (chunk, score) = ranked[i];
+                var rrfScore = 1.0 / (k + i + 1);
+                
+                if (!fusedScores.TryGetValue(chunk.Id, out var existing))
+                {
+                    existing = new RetrievedChunk
+                    {
+                        ChunkId = chunk.Id,
+                        DocumentId = chunk.DocumentId,
+                        Content = chunk.Content,
+                        ChunkIndex = chunk.ChunkIndex
+                    };
+                    fusedScores[chunk.Id] = existing;
+                }
+                
+                existing.KeywordScore = score;
+                existing.FusedScore += rrfScore;
+            }
+        }
+
+        // Filter: must have positive fused score (at least one valid contribution)
+        return fusedScores.Values
+            .Where(x => x.FusedScore > 0)
+            .ToList();
     }
 
     private static List<RetrievedChunk> FuseResults(

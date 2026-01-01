@@ -14,4 +14,14 @@ public interface IRagService
     /// Advanced retrieval with debug metrics and hybrid search support
     /// </summary>
     Task<RetrievalResult> RetrieveAsync(string query, int topK = 5, double minSimilarity = 0.7, RetrievalMode mode = RetrievalMode.Hybrid);
+    
+    /// <summary>
+    /// Advanced retrieval with full RagTrace for debug panel (flight recorder)
+    /// </summary>
+    Task<(RetrievalResult Result, RagTrace Trace)> RetrieveWithTraceAsync(
+        string query, 
+        int topK = 5, 
+        double minSimilarity = 0.7, 
+        RetrievalMode mode = RetrievalMode.Hybrid,
+        CancellationToken cancellationToken = default);
 }

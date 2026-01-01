@@ -52,7 +52,7 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty]
     private string _embeddingProgress = string.Empty;
 
-    // RAG Debug Panel
+    // RAG Debug Panel - Flight Recorder
     [ObservableProperty]
     private bool _showDebugPanel;
 
@@ -60,10 +60,22 @@ public partial class ChatViewModel : ObservableObject
     private RetrievalResult? _lastRetrievalResult;
 
     [ObservableProperty]
+    private RagTrace? _lastRagTrace;
+
+    [ObservableProperty]
     private ObservableCollection<RetrievedChunkViewModel> _retrievedChunks = [];
 
     [ObservableProperty]
+    private ObservableCollection<RagCandidateViewModel> _allCandidates = [];
+
+    [ObservableProperty]
+    private ObservableCollection<RagTimingViewModel> _timings = [];
+
+    [ObservableProperty]
     private RetrievalMode _selectedRetrievalMode = RetrievalMode.Hybrid;
+
+    [ObservableProperty]
+    private int _selectedDebugTab;
 
     public IReadOnlyList<RetrievalMode> RetrievalModes { get; } = Enum.GetValues<RetrievalMode>();
 
@@ -276,17 +288,33 @@ public partial class ChatViewModel : ObservableObject
         StatusText = "Testing retrieval...";
         try
         {
-            var result = await _ragService.RetrieveAsync(InputText, 5, 0.6, SelectedRetrievalMode);
+            var (result, trace) = await _ragService.RetrieveWithTraceAsync(InputText, 5, 0.6, SelectedRetrievalMode);
             LastRetrievalResult = result;
+            LastRagTrace = trace;
             
+            // Update chunks (selected only)
             RetrievedChunks.Clear();
             foreach (var chunk in result.Chunks)
             {
                 RetrievedChunks.Add(new RetrievedChunkViewModel(chunk));
             }
 
+            // Update all candidates (for debug table)
+            AllCandidates.Clear();
+            foreach (var candidate in trace.Candidates)
+            {
+                AllCandidates.Add(new RagCandidateViewModel(candidate));
+            }
+
+            // Update timings
+            Timings.Clear();
+            foreach (var timing in trace.Timings)
+            {
+                Timings.Add(new RagTimingViewModel(timing));
+            }
+
             ShowDebugPanel = true;
-            StatusText = $"Retrieved {result.Chunks.Count} chunks in {result.Metrics.TotalTimeMs}ms";
+            StatusText = $"Retrieved {result.Chunks.Count}/{trace.TotalCandidates} chunks in {trace.TotalTimeMs}ms";
         }
         catch (Exception ex)
         {
@@ -378,5 +406,57 @@ public partial class RetrievedChunkViewModel : ObservableObject
     public RetrievedChunkViewModel(RetrievedChunk chunk)
     {
         Chunk = chunk;
+    }
+}
+
+/// <summary>
+/// ViewModel for RAG candidate in debug table (all candidates, not just selected)
+/// </summary>
+public partial class RagCandidateViewModel : ObservableObject
+{
+    public RagChunkCandidate Candidate { get; }
+    
+    public int Rank => Candidate.Rank;
+    public string SourceName => Candidate.SourceName ?? "Unknown";
+    public int? ChunkIndex => Candidate.ChunkIndex;
+    public float VectorScore => Candidate.VectorScore;
+    public float KeywordScore => Candidate.KeywordScore;
+    public float FinalScore => Candidate.FinalScore;
+    public int TokenCount => Candidate.TokenCount;
+    public bool Included => Candidate.Included;
+    public string Preview => Candidate.Preview;
+    
+    public string VectorScoreText => VectorScore > 0 ? $"{VectorScore:P1}" : "-";
+    public string KeywordScoreText => KeywordScore > 0 ? $"{KeywordScore:F2}" : "-";
+    public string FinalScoreText => $"{FinalScore:F4}";
+    public string TokensText => $"{TokenCount} tok";
+    public string IncludedIcon => Included ? "✓" : "";
+    
+    // Row styling
+    public string RowBackground => Included ? "#1A3B82F6" : "Transparent";
+
+    public RagCandidateViewModel(RagChunkCandidate candidate)
+    {
+        Candidate = candidate;
+    }
+}
+
+/// <summary>
+/// ViewModel for pipeline timing measurement
+/// </summary>
+public partial class RagTimingViewModel : ObservableObject
+{
+    public RagTiming Timing { get; }
+    
+    public string Name => Timing.Name;
+    public long ElapsedMs => Timing.ElapsedMs;
+    public string ElapsedText => $"{ElapsedMs}ms";
+    
+    // Bar width for visual representation (max 200px for 1000ms)
+    public double BarWidth => Math.Min(200, ElapsedMs * 0.2);
+
+    public RagTimingViewModel(RagTiming timing)
+    {
+        Timing = timing;
     }
 }
