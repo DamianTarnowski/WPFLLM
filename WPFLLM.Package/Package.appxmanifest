@@ -6,7 +6,7 @@
          xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
          IgnorableNamespaces="uap rescap desktop">
 
-  <Identity Name="DamianTarnowski.WPFLLM"
+  <Identity Name="24677DamianTarnowski.WPFLLM-AIAssistant"
             Publisher="CN=99559BA1-8F6A-4FBB-AE4C-22C3D989353D"
             Version="1.0.0.0"
             ProcessorArchitecture="x64" />
