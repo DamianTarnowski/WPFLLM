@@ -8,6 +8,12 @@
     <UseWPF>true</UseWPF>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <!-- Add your icon: <ApplicationIcon>Resources\app.ico</ApplicationIcon> -->
+    <Version>1.0.0</Version>
+    <AssemblyTitle>WPFLLM - AI Assistant</AssemblyTitle>
+    <Product>WPFLLM</Product>
+    <Company>Damian Tarnowski</Company>
+    <Copyright>Copyright © 2026 Damian Tarnowski</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

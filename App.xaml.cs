@@ -34,20 +34,8 @@ public partial class App : Application
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
 
-        // Initialize database first
-        var dbService = Services.GetRequiredService<IDatabaseService>();
-        dbService.InitializeAsync().Wait();
-        
-        // Load saved language preference and initialize localization
-        var settingsService = Services.GetRequiredService<ISettingsService>();
-        var appSettings = settingsService.GetSettingsAsync().Result;
-        
-        var localization = Services.GetRequiredService<ILocalizationService>();
-        localization.SetLanguage(appSettings.Language);
-        
-        // Initialize encryption based on settings
-        var encryption = Services.GetRequiredService<IEncryptionService>();
-        encryption.SetEnabled(appSettings.EncryptData);
+        // Initialize services asynchronously to avoid UI freeze
+        InitializeServicesAsync().ConfigureAwait(false);
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -78,5 +66,30 @@ public partial class App : Application
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<RagViewModel>();
         services.AddTransient<EmbeddingsViewModel>();
+    }
+
+    private static async Task InitializeServicesAsync()
+    {
+        try
+        {
+            // Initialize database
+            var dbService = Services.GetRequiredService<IDatabaseService>();
+            await dbService.InitializeAsync();
+            
+            // Load saved language preference and initialize localization
+            var settingsService = Services.GetRequiredService<ISettingsService>();
+            var appSettings = await settingsService.GetSettingsAsync();
+            
+            var localization = Services.GetRequiredService<ILocalizationService>();
+            localization.SetLanguage(appSettings.Language);
+            
+            // Initialize encryption based on settings
+            var encryption = Services.GetRequiredService<IEncryptionService>();
+            encryption.SetEnabled(appSettings.EncryptData);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[INIT] Error: {ex}");
+        }
     }
 }
