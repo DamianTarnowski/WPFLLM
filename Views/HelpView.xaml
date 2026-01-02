@@ -143,6 +143,32 @@
                 </StackPanel>
             </Border>
 
+            <!-- Report Bug / Contact -->
+            <Border Background="{StaticResource SurfaceBrush}" 
+                    CornerRadius="12" Padding="24" Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Text="{DynamicResource Help_ReportBug}" 
+                               FontSize="18" FontWeight="SemiBold"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               Margin="0,0,0,16"/>
+                    
+                    <TextBlock Text="{DynamicResource Help_ReportBug_Text}" 
+                               Foreground="{StaticResource TextBrush}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,16"/>
+                    
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Padding="16,10"
+                            HorizontalAlignment="Left"
+                            Click="ReportBug_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📧" FontSize="16" Margin="0,0,8,0"/>
+                            <TextBlock Text="{DynamicResource Help_ReportBug_Button}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
             <!-- Keyboard Shortcuts -->
             <Border Background="{StaticResource SurfaceBrush}" 
                     CornerRadius="12" Padding="24" Margin="0,0,0,24">

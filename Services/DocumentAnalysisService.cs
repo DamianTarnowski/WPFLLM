@@ -27,7 +27,8 @@ public partial class DocumentAnalysisService : IDocumentAnalysisService
             }
         };
 
-        var prompt = BuildAnalysisPrompt(text);
+        var settings = await _settingsService.GetSettingsAsync();
+        var prompt = BuildAnalysisPrompt(text, settings.Language);
         var messages = new List<ChatMessage>
         {
             new() { Role = "user", Content = prompt }
@@ -48,7 +49,8 @@ public partial class DocumentAnalysisService : IDocumentAnalysisService
 
     public async IAsyncEnumerable<string> AnalyzeStreamingAsync(string text, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var prompt = BuildAnalysisPrompt(text);
+        var settings = await _settingsService.GetSettingsAsync();
+        var prompt = BuildAnalysisPrompt(text, settings.Language);
         var messages = new List<ChatMessage>
         {
             new() { Role = "user", Content = prompt }
@@ -60,9 +62,26 @@ public partial class DocumentAnalysisService : IDocumentAnalysisService
         }
     }
 
-    private static string BuildAnalysisPrompt(string text)
+    private static string BuildAnalysisPrompt(string text, string language)
     {
+        var languageInstruction = language switch
+        {
+            "pl-PL" => "IMPORTANT: Respond entirely in Polish (Polski).",
+            "de-DE" => "IMPORTANT: Respond entirely in German (Deutsch).",
+            "fr-FR" => "IMPORTANT: Respond entirely in French (Français).",
+            "es-ES" => "IMPORTANT: Respond entirely in Spanish (Español).",
+            "it-IT" => "IMPORTANT: Respond entirely in Italian (Italiano).",
+            "pt-PT" => "IMPORTANT: Respond entirely in Portuguese (Português).",
+            "nl-NL" => "IMPORTANT: Respond entirely in Dutch (Nederlands).",
+            "ru-RU" => "IMPORTANT: Respond entirely in Russian (Русский).",
+            "uk-UA" => "IMPORTANT: Respond entirely in Ukrainian (Українська).",
+            "zh-CN" => "IMPORTANT: Respond entirely in Chinese (中文).",
+            _ => "Respond in English."
+        };
+
         return $"""
+            {languageInstruction}
+            
             Analyze the following document/transcript and provide a structured analysis.
             
             DOCUMENT:
@@ -70,7 +89,7 @@ public partial class DocumentAnalysisService : IDocumentAnalysisService
             {text}
             ---
             
-            Provide your analysis in the following format (use these exact headers):
+            Provide your analysis in the following format (use these exact headers, but write content in the specified language):
             
             ## SUMMARY
             [2-3 sentence summary of the main content]

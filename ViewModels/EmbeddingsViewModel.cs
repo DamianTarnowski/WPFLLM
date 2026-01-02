@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WPFLLM.Models;
@@ -11,7 +12,9 @@ public partial class EmbeddingsViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IModelDownloadService _downloadService;
     private readonly ILocalEmbeddingService _localEmbeddingService;
+    private readonly IRagService _ragService;
     private CancellationTokenSource? _downloadCts;
+    private bool _isInitializing = true;
 
     [ObservableProperty]
     private ObservableCollection<EmbeddingModelViewModel> _availableModels = [];
@@ -46,11 +49,13 @@ public partial class EmbeddingsViewModel : ObservableObject
     public EmbeddingsViewModel(
         ISettingsService settingsService,
         IModelDownloadService downloadService,
-        ILocalEmbeddingService localEmbeddingService)
+        ILocalEmbeddingService localEmbeddingService,
+        IRagService ragService)
     {
         _settingsService = settingsService;
         _downloadService = downloadService;
         _localEmbeddingService = localEmbeddingService;
+        _ragService = ragService;
         _ = InitializeAsync();
     }
 
@@ -96,6 +101,7 @@ public partial class EmbeddingsViewModel : ObservableObject
             }
 
             await UpdateCurrentModelStatusAsync();
+            _isInitializing = false;
             System.Diagnostics.Debug.WriteLine("[EmbeddingsVM] InitializeAsync completed");
         }
         catch (Exception ex)
@@ -125,10 +131,66 @@ public partial class EmbeddingsViewModel : ObservableObject
         }
     }
 
-    partial void OnUseLocalEmbeddingsChanged(bool value)
+    partial void OnUseLocalEmbeddingsChanged(bool oldValue, bool newValue)
     {
-        _ = SaveSettingsAsync();
-        _ = UpdateCurrentModelStatusAsync();
+        if (_isInitializing) return;
+        
+        _ = HandleEmbeddingModeChangeAsync(oldValue, newValue);
+    }
+
+    private async Task HandleEmbeddingModeChangeAsync(bool oldValue, bool newValue)
+    {
+        var documents = await _ragService.GetDocumentsAsync();
+        
+        if (documents.Count > 0)
+        {
+            var modeFrom = oldValue 
+                ? Application.Current.TryFindResource("Emb_Local") as string ?? "Local"
+                : "API";
+            var modeTo = newValue 
+                ? Application.Current.TryFindResource("Emb_Local") as string ?? "Local" 
+                : "API";
+            
+            var title = Application.Current.TryFindResource("Emb_ConfirmTitle") as string ?? "Confirm embedding mode change";
+            var message = string.Format(
+                Application.Current.TryFindResource("Emb_ConfirmMessage") as string 
+                    ?? "Changing embedding mode from {0} to {1} will delete all {2} documents from the knowledge base.\n\nEmbeddings generated with different models are incompatible.\n\nDo you want to continue?",
+                modeFrom, modeTo, documents.Count);
+            
+            var result = MessageBox.Show(
+                message,
+                title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            
+            if (result == MessageBoxResult.Yes)
+            {
+                StatusMessage = Application.Current.TryFindResource("Emb_DeletingDocs") as string ?? "Deleting documents...";
+                
+                foreach (var doc in documents)
+                {
+                    await _ragService.DeleteDocumentAsync(doc.Id);
+                }
+                
+                StatusMessage = string.Format(
+                    Application.Current.TryFindResource("Emb_DocsDeleted") as string ?? "{0} documents deleted. Ready to add new documents.",
+                    documents.Count);
+                
+                await SaveSettingsAsync();
+                await UpdateCurrentModelStatusAsync();
+            }
+            else
+            {
+                _isInitializing = true;
+                UseLocalEmbeddings = oldValue;
+                _isInitializing = false;
+            }
+        }
+        else
+        {
+            await SaveSettingsAsync();
+            await UpdateCurrentModelStatusAsync();
+        }
     }
 
     partial void OnSelectedModelChanged(EmbeddingModelViewModel? value)

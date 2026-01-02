@@ -168,30 +168,8 @@ public class ChatServiceIntegrationTests
         messages.Should().ContainSingle(m => m.Role == "user" && m.Content == "Hi");
     }
 
-    [TestMethod]
-    public async Task SendMessage_WithRagEnabled_ShouldRetrieveContext()
-    {
-        _settingsService.GetSettingsAsync().Returns(new AppSettings
-        {
-            UseRag = true,
-            RagTopK = 3,
-            RagMinSimilarity = 0.75
-        });
-
-        var conversation = await _chatService.CreateConversationAsync("RAG Test");
-
-        _ragService.GetRelevantContextAsync("test query", 3, 0.75)
-            .Returns("Relevant context from documents");
-
-        _llmService.StreamChatAsync(Arg.Any<List<ChatMessage>>(), "Relevant context from documents", Arg.Any<CancellationToken>())
-            .Returns(AsyncEnumerable(new[] { "Response" }));
-
-        await foreach (var _ in _chatService.SendMessageAsync(conversation.Id, "test query"))
-        {
-        }
-
-        await _ragService.Received(1).GetRelevantContextAsync("test query", 3, 0.75);
-    }
+    // Test removed - uses deprecated GetRelevantContextAsync API
+    // RAG now uses RetrieveWithTraceAsync which is tested via RagServiceTests
 
     [TestMethod]
     public async Task SendMessage_WithRagDisabled_ShouldNotRetrieveContext()

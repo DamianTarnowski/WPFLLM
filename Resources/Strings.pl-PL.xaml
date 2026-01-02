@@ -42,6 +42,8 @@
     
     <!-- Document Analysis -->
     <system:String x:Key="DA_Title">Analiza Dokumentów</system:String>
+    <system:String x:Key="DA_Description">Analizuj dokumenty, transkrypcje lub dowolny tekst w celu uzyskania wniosków.</system:String>
+    <system:String x:Key="DA_InProgress">🔄 Analiza w toku...</system:String>
     <system:String x:Key="DA_PasteText">Wklej lub wpisz tekst do analizy...</system:String>
     <system:String x:Key="DA_ImportFile">Importuj Plik</system:String>
     <system:String x:Key="DA_Analyze">Analizuj</system:String>
@@ -76,22 +78,48 @@
     <system:String x:Key="Debug_Chunk">Fragment</system:String>
     
     <!-- Embeddings -->
-    <system:String x:Key="Emb_Title">Lokalne Embeddingi</system:String>
+    <system:String x:Key="Emb_Title">⚡ Embeddingi Lokalne</system:String>
     <system:String x:Key="Emb_Description">Generuj embeddingi lokalnie bez API - szybciej, taniej, prywatniej</system:String>
     <system:String x:Key="Emb_Mode">Tryb embeddingów</system:String>
+    <system:String x:Key="Emb_ModeAPI">Obecnie: API (OpenRouter/OpenAI)</system:String>
+    <system:String x:Key="Emb_ModeLocal">Obecnie: Model lokalny</system:String>
     <system:String x:Key="Emb_API">API</system:String>
     <system:String x:Key="Emb_Local">Lokalny</system:String>
+    <system:String x:Key="Emb_LoadModel">🚀 Załaduj wybrany model</system:String>
+    <system:String x:Key="Emb_RefreshStatus">🔄 Odśwież status</system:String>
     <system:String x:Key="Emb_Downloaded">Pobrano:</system:String>
-    <system:String x:Key="Emb_AvailableModels">Dostępne Modele</system:String>
-    <system:String x:Key="Emb_Download">Pobierz</system:String>
+    <system:String x:Key="Emb_Cancel">✕ Anuluj</system:String>
+    <system:String x:Key="Emb_AvailableModels">📦 Dostępne modele</system:String>
+    <system:String x:Key="Emb_QualityTooltip">Ocena jakości</system:String>
+    <system:String x:Key="Emb_Download">⬇️ Pobierz</system:String>
+    <system:String x:Key="Emb_Resume">▶️ Wznów</system:String>
     <system:String x:Key="Emb_Load">Załaduj</system:String>
     <system:String x:Key="Emb_Unload">Wyładuj</system:String>
     <system:String x:Key="Emb_Delete">Usuń</system:String>
+    <system:String x:Key="Emb_DeleteTooltip">Usuń model</system:String>
+    <system:String x:Key="Emb_Dimensions">wymiarów</system:String>
+    <system:String x:Key="Emb_Recommended">✅ Zalecane:</system:String>
+    <system:String x:Key="Emb_Languages">🌍 Języki:</system:String>
     <system:String x:Key="Emb_Loaded">Załadowany</system:String>
     <system:String x:Key="Emb_NotLoaded">Nie załadowany</system:String>
     <system:String x:Key="Emb_Downloading">Pobieranie...</system:String>
-    <system:String x:Key="Emb_TestSimilarity">Test Podobieństwa</system:String>
-    <system:String x:Key="Emb_TestDesc">Sprawdź jakość embeddingów na przykładowych słowach polskich</system:String>
+    <system:String x:Key="Emb_TestSimilarity">🧪 Test podobieństwa słów</system:String>
+    <system:String x:Key="Emb_TestDesc">Sprawdź jakość embeddingów na przykładowych słowach</system:String>
+    <system:String x:Key="Emb_RunTest">▶️ Uruchom test</system:String>
+    <system:String x:Key="Emb_Generating">⏳ Generowanie embeddingów...</system:String>
+    <system:String x:Key="Emb_Info">ℹ️ Informacje</system:String>
+    <system:String x:Key="Emb_InfoE5">• Modele E5 wymagają prefixu 'query:' lub 'passage:' - dodawany automatycznie</system:String>
+    <system:String x:Key="Emb_InfoDimensions">• Większe wymiary = lepsza jakość, ale więcej miejsca i pamięci</system:String>
+    <system:String x:Key="Emb_InfoResume">• Pobieranie można wznowić po przerwaniu</system:String>
+    <system:String x:Key="Emb_InfoPath">• Modele zapisywane w: %LocalAppData%\WPFLLM\models\</system:String>
+    <system:String x:Key="Emb_ConfirmTitle">Potwierdź zmianę trybu embeddingów</system:String>
+    <system:String x:Key="Emb_ConfirmMessage">Zmiana trybu embeddingów z {0} na {1} usunie wszystkie {2} dokumenty z bazy wiedzy.
+
+Embeddingi wygenerowane różnymi modelami są niekompatybilne.
+
+Czy chcesz kontynuować?</system:String>
+    <system:String x:Key="Emb_DeletingDocs">Usuwanie dokumentów...</system:String>
+    <system:String x:Key="Emb_DocsDeleted">{0} dokumentów usunięto. Gotowe do dodania nowych dokumentów.</system:String>
     
     <!-- Settings -->
     <system:String x:Key="Settings_Title">Ustawienia</system:String>
@@ -174,6 +202,10 @@
     <system:String x:Key="Help_Version">Wersja 1.0</system:String>
     <system:String x:Key="Help_Author">Autor: Damian Tarnowski</system:String>
     <system:String x:Key="Help_Contact">Kontakt: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_ReportBug">🐛 Zgłoś błąd / Kontakt</system:String>
+    <system:String x:Key="Help_ReportBug_Text">Znalazłeś błąd lub masz sugestię? Napisz do nas! Chętnie wysłuchamy Twojej opinii.</system:String>
+    <system:String x:Key="Help_ReportBug_Button">Wyślij wiadomość</system:String>
+    <system:String x:Key="Help_EmailCopied">Email skopiowany do schowka: hdtdtr@gmail.com</system:String>
     <system:String x:Key="Help_Description">Potężny desktopowy asystent AI z możliwościami RAG (Retrieval-Augmented Generation), lokalnymi embeddingami i analizą dokumentów.</system:String>
     
     <system:String x:Key="Help_GettingStarted">Jak zacząć</system:String>

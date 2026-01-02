@@ -42,6 +42,8 @@
     
     <!-- Document Analysis -->
     <system:String x:Key="DA_Title">Document Analysis</system:String>
+    <system:String x:Key="DA_Description">Analyze documents, transcripts, or any text for insights.</system:String>
+    <system:String x:Key="DA_InProgress">🔄 Analysis in progress...</system:String>
     <system:String x:Key="DA_PasteText">Paste or type text to analyze...</system:String>
     <system:String x:Key="DA_ImportFile">Import File</system:String>
     <system:String x:Key="DA_Analyze">Analyze</system:String>
@@ -76,22 +78,48 @@
     <system:String x:Key="Debug_Chunk">Chunk</system:String>
     
     <!-- Embeddings -->
-    <system:String x:Key="Emb_Title">Local Embeddings</system:String>
+    <system:String x:Key="Emb_Title">⚡ Local Embeddings</system:String>
     <system:String x:Key="Emb_Description">Generate embeddings locally without API - faster, cheaper, more private</system:String>
     <system:String x:Key="Emb_Mode">Embedding Mode</system:String>
+    <system:String x:Key="Emb_ModeAPI">Currently: API (OpenRouter/OpenAI)</system:String>
+    <system:String x:Key="Emb_ModeLocal">Currently: Local model</system:String>
     <system:String x:Key="Emb_API">API</system:String>
     <system:String x:Key="Emb_Local">Local</system:String>
+    <system:String x:Key="Emb_LoadModel">🚀 Load selected model</system:String>
+    <system:String x:Key="Emb_RefreshStatus">🔄 Refresh status</system:String>
     <system:String x:Key="Emb_Downloaded">Downloaded:</system:String>
-    <system:String x:Key="Emb_AvailableModels">Available Models</system:String>
-    <system:String x:Key="Emb_Download">Download</system:String>
+    <system:String x:Key="Emb_Cancel">✕ Cancel</system:String>
+    <system:String x:Key="Emb_AvailableModels">📦 Available models</system:String>
+    <system:String x:Key="Emb_QualityTooltip">Quality rating</system:String>
+    <system:String x:Key="Emb_Download">⬇️ Download</system:String>
+    <system:String x:Key="Emb_Resume">▶️ Resume</system:String>
     <system:String x:Key="Emb_Load">Load</system:String>
     <system:String x:Key="Emb_Unload">Unload</system:String>
     <system:String x:Key="Emb_Delete">Delete</system:String>
+    <system:String x:Key="Emb_DeleteTooltip">Delete model</system:String>
+    <system:String x:Key="Emb_Dimensions">dimensions</system:String>
+    <system:String x:Key="Emb_Recommended">✅ Recommended:</system:String>
+    <system:String x:Key="Emb_Languages">🌍 Languages:</system:String>
     <system:String x:Key="Emb_Loaded">Loaded</system:String>
     <system:String x:Key="Emb_NotLoaded">Not Loaded</system:String>
     <system:String x:Key="Emb_Downloading">Downloading...</system:String>
-    <system:String x:Key="Emb_TestSimilarity">Test Similarity</system:String>
-    <system:String x:Key="Emb_TestDesc">Check embedding quality on sample Polish words</system:String>
+    <system:String x:Key="Emb_TestSimilarity">🧪 Word similarity test</system:String>
+    <system:String x:Key="Emb_TestDesc">Check embedding quality on sample words</system:String>
+    <system:String x:Key="Emb_RunTest">▶️ Run test</system:String>
+    <system:String x:Key="Emb_Generating">⏳ Generating embeddings...</system:String>
+    <system:String x:Key="Emb_Info">ℹ️ Information</system:String>
+    <system:String x:Key="Emb_InfoE5">• E5 models require 'query:' or 'passage:' prefix - added automatically</system:String>
+    <system:String x:Key="Emb_InfoDimensions">• More dimensions = better quality, but more storage and memory</system:String>
+    <system:String x:Key="Emb_InfoResume">• Downloads can be resumed after interruption</system:String>
+    <system:String x:Key="Emb_InfoPath">• Models saved in: %LocalAppData%\WPFLLM\models\</system:String>
+    <system:String x:Key="Emb_ConfirmTitle">Confirm embedding mode change</system:String>
+    <system:String x:Key="Emb_ConfirmMessage">Changing embedding mode from {0} to {1} will delete all {2} documents from the knowledge base.
+
+Embeddings generated with different models are incompatible.
+
+Do you want to continue?</system:String>
+    <system:String x:Key="Emb_DeletingDocs">Deleting documents...</system:String>
+    <system:String x:Key="Emb_DocsDeleted">{0} documents deleted. Ready to add new documents.</system:String>
     
     <!-- Settings -->
     <system:String x:Key="Settings_Title">Settings</system:String>
@@ -174,6 +202,10 @@
     <system:String x:Key="Help_Version">Version 1.0</system:String>
     <system:String x:Key="Help_Author">Created by Damian Tarnowski</system:String>
     <system:String x:Key="Help_Contact">Contact: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_ReportBug">🐛 Report Bug / Contact</system:String>
+    <system:String x:Key="Help_ReportBug_Text">Found a bug or have a suggestion? Let us know! We'd love to hear your feedback.</system:String>
+    <system:String x:Key="Help_ReportBug_Button">Send message</system:String>
+    <system:String x:Key="Help_EmailCopied">Email copied to clipboard: hdtdtr@gmail.com</system:String>
     <system:String x:Key="Help_Description">A powerful desktop AI assistant with RAG (Retrieval-Augmented Generation) capabilities, local embeddings, and document analysis.</system:String>
     
     <system:String x:Key="Help_GettingStarted">Getting Started</system:String>

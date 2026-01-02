@@ -151,6 +151,10 @@
     <system:String x:Key="Help_Version">Version 1.0</system:String>
     <system:String x:Key="Help_Author">Créé par Damian Tarnowski</system:String>
     <system:String x:Key="Help_Contact">Contact: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_ReportBug">🐛 Signaler un bug / Contact</system:String>
+    <system:String x:Key="Help_ReportBug_Text">Vous avez trouvé un bug ou avez une suggestion ? Faites-le nous savoir !</system:String>
+    <system:String x:Key="Help_ReportBug_Button">Envoyer un message</system:String>
+    <system:String x:Key="Help_EmailCopied">Email copié dans le presse-papiers : hdtdtr@gmail.com</system:String>
     <system:String x:Key="Help_Description">Un puissant assistant IA de bureau avec des capacités RAG (Retrieval-Augmented Generation), des embeddings locaux et une analyse de documents.</system:String>
     
     <system:String x:Key="Help_GettingStarted">Premiers pas</system:String>

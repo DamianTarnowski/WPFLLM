@@ -24,7 +24,7 @@
                                FontWeight="Bold"
                                Foreground="{StaticResource TextBrush}"
                                Margin="0,0,0,8"/>
-                    <TextBlock Text="Analyze documents, transcripts, or any text for insights."
+                    <TextBlock Text="{DynamicResource DA_Description}"
                                Foreground="{StaticResource TextMutedBrush}"
                                TextWrapping="Wrap"
                                Margin="0,0,0,16"/>
@@ -339,7 +339,7 @@
                         Padding="16"
                         Visibility="{Binding IsAnalyzing, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
-                        <TextBlock Text="🔄 Analysis in progress..." 
+                        <TextBlock Text="{DynamicResource DA_InProgress}" 
                                    FontWeight="SemiBold"
                                    Foreground="{StaticResource PrimaryBrush}"
                                    Margin="0,0,0,12"/>
