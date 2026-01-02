@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
@@ -8,6 +9,7 @@ namespace WPFLLM.Services;
 /// Encryption service using DPAPI for key protection and AES-GCM for data encryption.
 /// Data never leaves the device, encrypted at rest.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public class EncryptionService : IEncryptionService
 {
     private const int KeySize = 256;

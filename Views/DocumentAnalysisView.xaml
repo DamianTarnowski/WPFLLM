@@ -15,6 +15,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel>
@@ -38,7 +39,20 @@
                          VerticalContentAlignment="Top"
                          Padding="12"/>
 
-                <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                <!-- Warning Message -->
+                <Border Grid.Row="2" 
+                        Background="#FEF3C7"
+                        CornerRadius="6"
+                        Padding="12"
+                        Margin="0,8,0,0"
+                        Visibility="{Binding HasWarning, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding WarningMessage}" 
+                               Foreground="#92400E"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <StackPanel Grid.Row="3" Margin="0,16,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

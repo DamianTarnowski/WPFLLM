@@ -258,9 +258,10 @@ public class RagService : IRagService
         return denom == 0 ? 0 : dot / denom;
     }
 
-    public async Task<RetrievalResult> RetrieveAsync(string query, int topK = 5, double minSimilarity = 0.7, RetrievalMode mode = RetrievalMode.Hybrid)
+    public async Task<RetrievalResult> RetrieveAsync(string query, int topK = 5, double minSimilarity = 0.7, 
+        RetrievalMode mode = RetrievalMode.Hybrid, double rrfK = 60.0, double hybridBalance = 0.5)
     {
-        var (result, _) = await RetrieveWithTraceAsync(query, topK, minSimilarity, mode);
+        var (result, _) = await RetrieveWithTraceAsync(query, topK, minSimilarity, mode, rrfK, hybridBalance);
         return result;
     }
 
@@ -269,13 +270,19 @@ public class RagService : IRagService
         int topK = 5, 
         double minSimilarity = 0.7, 
         RetrievalMode mode = RetrievalMode.Hybrid,
+        double rrfK = 60.0,
+        double hybridBalance = 0.5,
         CancellationToken cancellationToken = default)
     {
+        // Convert balance to weights: 0=keyword only, 0.5=balanced, 1=vector only
+        var vectorWeight = hybridBalance * 2;
+        var keywordWeight = (1 - hybridBalance) * 2;
+        
         var trace = new RagTrace 
         { 
             Query = query,
             RetrievalMode = mode,
-            FusionFormula = "RRF(k=60)"
+            FusionFormula = $"RRF(k={rrfK}) Balance:{hybridBalance:P0} (V:{vectorWeight:F1}/K:{keywordWeight:F1})"
         };
         
         var tokenCounter = new EstimationTokenCounter();
@@ -341,7 +348,7 @@ public class RagService : IRagService
         List<RetrievedChunk> fusedResults = [];
         trace.Measure("Merge+Rerank", () =>
         {
-            fusedResults = FuseResultsWithAllCandidates(vectorResults, keywordResults, mode, minSimilarity);
+            fusedResults = FuseResultsWithAllCandidates(vectorResults, keywordResults, mode, minSimilarity, rrfK, vectorWeight, keywordWeight);
         });
         
         // Sort and select top K
@@ -386,14 +393,13 @@ public class RagService : IRagService
         }
 
         // Update candidate source names after enrichment
-        foreach (var candidate in trace.Candidates)
+        for (int i = 0; i < trace.Candidates.Count; i++)
         {
+            var candidate = trace.Candidates[i];
             var matchingResult = topResults.FirstOrDefault(r => r.ChunkId == candidate.ChunkId);
             if (matchingResult != null && candidate.SourceName != matchingResult.DocumentName)
             {
-                // Create new candidate with updated source name
-                var index = trace.Candidates.IndexOf(candidate);
-                trace.Candidates[index] = candidate with { SourceName = matchingResult.DocumentName };
+                trace.Candidates[i] = candidate with { SourceName = matchingResult.DocumentName };
             }
         }
 
@@ -413,9 +419,11 @@ public class RagService : IRagService
         List<(RagChunk Chunk, double Score)> vectorResults,
         List<(RagChunk Chunk, double Score)> keywordResults,
         RetrievalMode mode,
-        double minSimilarity)
+        double minSimilarity,
+        double rrfK = 60.0,
+        double vectorWeight = 1.0,
+        double keywordWeight = 1.0)
     {
-        const double k = 60.0; // RRF constant
         var fusedScores = new Dictionary<long, RetrievedChunk>();
 
         // Process vector results (include all for trace, filter later)
@@ -427,7 +435,7 @@ public class RagService : IRagService
                 var (chunk, score) = ranked[i];
                 
                 // Only contribute to RRF if above threshold
-                var rrfScore = score >= minSimilarity ? 1.0 / (k + i + 1) : 0;
+                var rrfScore = score >= minSimilarity ? vectorWeight / (rrfK + i + 1) : 0;
                 
                 if (!fusedScores.TryGetValue(chunk.Id, out var existing))
                 {
@@ -453,7 +461,7 @@ public class RagService : IRagService
             for (int i = 0; i < ranked.Count; i++)
             {
                 var (chunk, score) = ranked[i];
-                var rrfScore = 1.0 / (k + i + 1);
+                var rrfScore = keywordWeight / (rrfK + i + 1);
                 
                 if (!fusedScores.TryGetValue(chunk.Id, out var existing))
                 {

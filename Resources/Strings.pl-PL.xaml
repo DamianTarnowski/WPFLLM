@@ -27,6 +27,7 @@
     
     <!-- Knowledge Base -->
     <system:String x:Key="KB_Title">Baza Wiedzy</system:String>
+    <system:String x:Key="KB_Description">Dodaj dokumenty, aby włączyć RAG. System wykorzysta odpowiednie treści z tych dokumentów do odpowiadania na Twoje pytania.</system:String>
     <system:String x:Key="KB_AddDocument">Dodaj Dokument</system:String>
     <system:String x:Key="KB_DeleteDocument">Usuń</system:String>
     <system:String x:Key="KB_GenerateEmbeddings">Generuj Embeddingi</system:String>
@@ -76,6 +77,11 @@
     
     <!-- Embeddings -->
     <system:String x:Key="Emb_Title">Lokalne Embeddingi</system:String>
+    <system:String x:Key="Emb_Description">Generuj embeddingi lokalnie bez API - szybciej, taniej, prywatniej</system:String>
+    <system:String x:Key="Emb_Mode">Tryb embeddingów</system:String>
+    <system:String x:Key="Emb_API">API</system:String>
+    <system:String x:Key="Emb_Local">Lokalny</system:String>
+    <system:String x:Key="Emb_Downloaded">Pobrano:</system:String>
     <system:String x:Key="Emb_AvailableModels">Dostępne Modele</system:String>
     <system:String x:Key="Emb_Download">Pobierz</system:String>
     <system:String x:Key="Emb_Load">Załaduj</system:String>
@@ -85,6 +91,7 @@
     <system:String x:Key="Emb_NotLoaded">Nie załadowany</system:String>
     <system:String x:Key="Emb_Downloading">Pobieranie...</system:String>
     <system:String x:Key="Emb_TestSimilarity">Test Podobieństwa</system:String>
+    <system:String x:Key="Emb_TestDesc">Sprawdź jakość embeddingów na przykładowych słowach polskich</system:String>
     
     <!-- Settings -->
     <system:String x:Key="Settings_Title">Ustawienia</system:String>
@@ -92,17 +99,40 @@
     <system:String x:Key="Settings_APIConfiguration">Konfiguracja API</system:String>
     <system:String x:Key="Settings_APIKey">Klucz API</system:String>
     <system:String x:Key="Settings_Endpoint">Endpoint</system:String>
+    <system:String x:Key="Settings_EndpointAuto">(auto)</system:String>
     <system:String x:Key="Settings_Model">Model</system:String>
     <system:String x:Key="Settings_RAGSettings">Ustawienia RAG</system:String>
-    <system:String x:Key="Settings_EnableRAG">Włącz RAG</system:String>
-    <system:String x:Key="Settings_TopK">Top K Wyników</system:String>
-    <system:String x:Key="Settings_MinSimilarity">Minimalne Podobieństwo</system:String>
-    <system:String x:Key="Settings_RetrievalMode">Tryb Wyszukiwania</system:String>
+    <system:String x:Key="Settings_EnableRAG">Włącz RAG (Retrieval Augmented Generation)</system:String>
+    <system:String x:Key="Settings_TopK">Top K wyników</system:String>
+    <system:String x:Key="Settings_MinSimilarity">Minimalne podobieństwo</system:String>
+    <system:String x:Key="Settings_RetrievalMode">Tryb wyszukiwania</system:String>
     <system:String x:Key="Settings_Security">Bezpieczeństwo</system:String>
-    <system:String x:Key="Settings_EncryptData">Szyfruj Dane</system:String>
+    <system:String x:Key="Settings_EncryptData">Szyfruj dane</system:String>
     <system:String x:Key="Settings_Save">Zapisz</system:String>
     <system:String x:Key="Settings_Reset">Resetuj</system:String>
     <system:String x:Key="Settings_Saved">Ustawienia zapisane</system:String>
+    <system:String x:Key="Settings_OpenRouter">OpenRouter</system:String>
+    <system:String x:Key="Settings_OpenRouterDesc">Jeden klucz do 400+ modeli</system:String>
+    <system:String x:Key="Settings_Native">Natywny</system:String>
+    <system:String x:Key="Settings_NativeDesc">Bezpośrednie API dostawcy</system:String>
+    <system:String x:Key="Settings_SelectProvider">Wybierz dostawcę:</system:String>
+    <system:String x:Key="Settings_ModelBrowser">Przeglądarka modeli</system:String>
+    <system:String x:Key="Settings_ModelBrowserDesc">Przeglądaj 400+ modeli z OpenRouter. Wybierz model, aby zobaczyć szczegóły i użyć go.</system:String>
+    <system:String x:Key="Settings_CurrentModel">Aktualny model</system:String>
+    <system:String x:Key="Settings_ManualModelId">Lub wpisz ID modelu ręcznie:</system:String>
+    <system:String x:Key="Settings_GenerationSettings">Ustawienia generowania</system:String>
+    <system:String x:Key="Settings_Temperature">Temperatura:</system:String>
+    <system:String x:Key="Settings_MaxTokens">Maks. tokenów:</system:String>
+    <system:String x:Key="Settings_SystemPrompt">Prompt systemowy</system:String>
+    <system:String x:Key="Settings_ContextChunks">Liczba kontekstowych fragmentów:</system:String>
+    <system:String x:Key="Settings_SimilarityHint">💡 Próg filtruje fragmenty o niskim podobieństwie. 60% = więcej wyników (mniej precyzyjne), 95% = mniej wyników (bardzo precyzyjne). Zalecane: 70-80% dla ogólnego użycia.</system:String>
+    <system:String x:Key="Settings_LocalLLM">🤖 Lokalny model LLM</system:String>
+    <system:String x:Key="Settings_LocalLLMModel">Model: Phi-3 Mini 4K Instruct</system:String>
+    <system:String x:Key="Settings_LocalLLMSpecs">3.8B parametrów, 4-6 GB RAM, ~15-30 tok/s</system:String>
+    <system:String x:Key="Settings_Status">Status:</system:String>
+    <system:String x:Key="Settings_NotDownloaded">Nie pobrano</system:String>
+    <system:String x:Key="Settings_Ready">✓ Gotowy</system:String>
+    <system:String x:Key="Settings_EncryptionInfo">🛡️ Dane są szyfrowane przy użyciu AES-256-GCM z kluczami chronionymi przez Windows DPAPI. Twoje dane nigdy nie opuszczają tego urządzenia i pozostają zaszyfrowane.</system:String>
     
     <!-- Status Bar -->
     <system:String x:Key="Status_Offline">Tryb Offline</system:String>
@@ -135,5 +165,75 @@
     <system:String x:Key="Common_Loading">Ładowanie...</system:String>
     <system:String x:Key="Common_Copy">Kopiuj</system:String>
     <system:String x:Key="Common_Copied">Skopiowano!</system:String>
+    
+    <!-- Help -->
+    <system:String x:Key="Nav_Help">Pomoc</system:String>
+    <system:String x:Key="Help_Title">Pomoc i informacje</system:String>
+    <system:String x:Key="Help_About">O programie</system:String>
+    <system:String x:Key="Help_AppName">WPFLLM - Asystent AI</system:String>
+    <system:String x:Key="Help_Version">Wersja 1.0</system:String>
+    <system:String x:Key="Help_Author">Autor: Damian Tarnowski</system:String>
+    <system:String x:Key="Help_Contact">Kontakt: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_Description">Potężny desktopowy asystent AI z możliwościami RAG (Retrieval-Augmented Generation), lokalnymi embeddingami i analizą dokumentów.</system:String>
+    
+    <system:String x:Key="Help_GettingStarted">Jak zacząć</system:String>
+    <system:String x:Key="Help_GettingStarted_Text">1. Przejdź do Ustawień i skonfiguruj klucz API (OpenRouter lub kompatybilne API)
+2. Rozpocznij rozmowę w zakładce Chat
+3. Opcjonalnie dodaj dokumenty do Bazy Wiedzy dla odpowiedzi wzbogaconych o RAG</system:String>
+    
+    <system:String x:Key="Help_Features">Funkcje</system:String>
+    <system:String x:Key="Help_Feature_Chat">Chat - Rozmowa z modelami AI ze streamingiem odpowiedzi</system:String>
+    <system:String x:Key="Help_Feature_KB">Baza Wiedzy - Importuj dokumenty (PDF, DOCX, TXT, MD, JSON, CSV) i używaj ich jako kontekstu dla odpowiedzi AI</system:String>
+    <system:String x:Key="Help_Feature_DocAnalysis">Analiza Dokumentów - Analizuj dokumenty pod kątem podsumowań, kluczowych punktów i zgodności</system:String>
+    <system:String x:Key="Help_Feature_Embeddings">Embeddingi - Pobierz i używaj lokalnych modeli embeddingów do wyszukiwania wektorowego offline</system:String>
+    <system:String x:Key="Help_Feature_RAG">System RAG - Hybrydowe wyszukiwanie łączące wyszukiwanie wektorowe i słów kluczowych z fuzją RRF</system:String>
+    
+    <system:String x:Key="Help_RAG">System RAG</system:String>
+    <system:String x:Key="Help_RAG_Text">System RAG (Retrieval-Augmented Generation) wzbogaca odpowiedzi AI poprzez pobieranie odpowiedniego kontekstu z Twoich dokumentów:
+• Wyszukiwanie wektorowe - Podobieństwo semantyczne przy użyciu embeddingów
+• Wyszukiwanie słów kluczowych - Pełnotekstowe wyszukiwanie (FTS5) dla dokładnych dopasowań
+• Tryb hybrydowy - Łączy obie metody używając Reciprocal Rank Fusion (RRF)
+• Flight Recorder - Panel debugowania pokazujący źródła, kandydatów i czasy</system:String>
+    
+    <system:String x:Key="Help_Embeddings">Lokalne Embeddingi</system:String>
+    <system:String x:Key="Help_Embeddings_Text">Pobierz modele embeddingów aby generować wektory lokalnie bez wywołań API:
+1. Przejdź do zakładki Embeddingi
+2. Pobierz model (zalecany: Multilingual E5 Large Instruct)
+3. Kliknij "Załaduj wybrany model"
+4. Włącz "Używaj lokalnych embeddingów" w Ustawieniach</system:String>
+    
+    <system:String x:Key="Help_Shortcuts">Skróty klawiszowe</system:String>
+    <system:String x:Key="Help_Shortcut_Send">Enter - Wyślij wiadomość</system:String>
+    <system:String x:Key="Help_Shortcut_NewLine">Shift+Enter - Nowa linia</system:String>
+    <system:String x:Key="Help_Shortcut_Stop">Escape - Zatrzymaj generowanie</system:String>
+
+    <!-- Validation Messages -->
+    <system:String x:Key="Validation_NoApiKey">⚠️ Brak klucza API! Przejdź do Ustawień i skonfiguruj klucz API aby korzystać z chatu.</system:String>
+    <system:String x:Key="Validation_NoApiKeyAnalysis">⚠️ Brak klucza API! Przejdź do Ustawień i skonfiguruj klucz API aby analizować dokumenty.</system:String>
+    <system:String x:Key="Validation_EmptyKnowledgeBase">📚 Baza wiedzy jest pusta!
+
+Aby korzystać z RAG (wyszukiwania w dokumentach):
+1. Kliknij 'Dodaj dokumenty' i wybierz pliki
+2. Kliknij 'Generuj embeddingi'
+3. Włącz RAG w ustawieniach chatu</system:String>
+    <system:String x:Key="Chat_Welcome">Zacznij rozmowę!</system:String>
+    <system:String x:Key="Chat_WelcomeHint">Wpisz wiadomość poniżej i naciśnij Enter.
+Upewnij się, że masz skonfigurowany klucz API w Ustawieniach.</system:String>
+
+    <!-- Button Labels -->
+    <system:String x:Key="Btn_NewChat">+ Nowy czat</system:String>
+    <system:String x:Key="Btn_DeleteSelected">Usuń zaznaczone</system:String>
+    <system:String x:Key="Btn_Export">📤 Eksportuj</system:String>
+    <system:String x:Key="Btn_Import">📥 Importuj</system:String>
+    <system:String x:Key="Btn_Send">Wyślij</system:String>
+    <system:String x:Key="Btn_Stop">Stop</system:String>
+    <system:String x:Key="Btn_AddDocuments">Dodaj dokumenty</system:String>
+    <system:String x:Key="Btn_GenerateEmbeddings">Generuj embeddingi</system:String>
+    <system:String x:Key="Btn_Cancel">Anuluj</system:String>
+    <system:String x:Key="Btn_Use">Użyj</system:String>
+    <system:String x:Key="Btn_ShowDetails">Pokaż szczegóły</system:String>
+    <system:String x:Key="Btn_SaveSettings">Zapisz ustawienia</system:String>
+    <system:String x:Key="Btn_DownloadModel">Pobierz model (~2.4 GB)</system:String>
+    <system:String x:Key="Chk_UseLocalLlm">Używaj lokalnego modelu LLM (offline)</system:String>
 
 </ResourceDictionary>

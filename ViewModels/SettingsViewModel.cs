@@ -42,7 +42,7 @@ public partial class SettingsViewModel : ObservableObject
     private int _ragTopK = 3;
 
     [ObservableProperty]
-    private double _ragMinSimilarity = 0.75;
+    private double _ragMinSimilarity = 0.5;
 
     [ObservableProperty]
     private bool _useLocalLlm;

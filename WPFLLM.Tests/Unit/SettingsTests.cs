@@ -23,7 +23,7 @@ public class SettingsTests
         settings.MaxTokens.Should().Be(4096);
         settings.UseRag.Should().BeFalse();
         settings.RagTopK.Should().Be(3);
-        settings.RagMinSimilarity.Should().Be(0.75);
+        settings.RagMinSimilarity.Should().Be(0.5);
     }
 
     [TestMethod]

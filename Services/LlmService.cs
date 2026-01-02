@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,12 +14,24 @@ public class LlmService : ILlmService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ISettingsService _settingsService;
     private readonly ILocalEmbeddingService _localEmbeddingService;
+    private readonly IRateLimiter _rateLimiter;
+    private readonly ILoggingService _logger;
+    
+    private const int MaxRetries = 3;
+    private static readonly TimeSpan[] RetryDelays = [TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(4)];
 
-    public LlmService(IHttpClientFactory httpClientFactory, ISettingsService settingsService, ILocalEmbeddingService localEmbeddingService)
+    public LlmService(
+        IHttpClientFactory httpClientFactory, 
+        ISettingsService settingsService, 
+        ILocalEmbeddingService localEmbeddingService,
+        IRateLimiter rateLimiter,
+        ILoggingService logger)
     {
         _httpClientFactory = httpClientFactory;
         _settingsService = settingsService;
         _localEmbeddingService = localEmbeddingService;
+        _rateLimiter = rateLimiter;
+        _logger = logger;
     }
 
     public async IAsyncEnumerable<string> StreamChatAsync(
@@ -66,17 +79,50 @@ public class LlmService : ILlmService
 
         var endpoint = settings.ApiEndpoint.TrimEnd('/') + "/chat/completions";
 
+        // Rate limiting
+        await _rateLimiter.WaitAsync(cancellationToken);
+        _rateLimiter.RecordRequest();
+        
         HttpResponseMessage? response = null;
         string? errorMessage = null;
+        var stopwatch = Stopwatch.StartNew();
         
-        try
+        // Retry logic with exponential backoff
+        for (int retry = 0; retry <= MaxRetries; retry++)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, endpoint) { Content = content };
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"[Error: {ex.Message}]";
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, endpoint) { Content = content };
+                response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogApiCall(endpoint, (int)response.StatusCode, stopwatch.ElapsedMilliseconds);
+                    break;
+                }
+                
+                // Retry on 429 (rate limit) or 5xx (server error)
+                var statusCode = (int)response.StatusCode;
+                if ((statusCode == 429 || statusCode >= 500) && retry < MaxRetries)
+                {
+                    _logger.LogWarning($"API returned {statusCode}, retrying ({retry + 1}/{MaxRetries})...");
+                    await Task.Delay(RetryDelays[retry], cancellationToken);
+                    continue;
+                }
+                
+                break;
+            }
+            catch (HttpRequestException ex) when (retry < MaxRetries)
+            {
+                _logger.LogWarning($"Request failed: {ex.Message}, retrying ({retry + 1}/{MaxRetries})...");
+                await Task.Delay(RetryDelays[retry], cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"[Error: {ex.Message}]";
+                _logger.LogError("API request failed", ex);
+                break;
+            }
         }
 
         if (errorMessage != null)
@@ -88,6 +134,7 @@ public class LlmService : ILlmService
         if (response == null || !response.IsSuccessStatusCode)
         {
             var errorBody = response != null ? await response.Content.ReadAsStringAsync(cancellationToken) : "No response";
+            _logger.LogError($"API error: {response?.StatusCode} - {errorBody}");
             yield return $"[Error {response?.StatusCode}: {errorBody}]";
             yield break;
         }

@@ -27,6 +27,7 @@
     
     <!-- Knowledge Base -->
     <system:String x:Key="KB_Title">Knowledge Base</system:String>
+    <system:String x:Key="KB_Description">Add documents to enable RAG. The system will use relevant content from these documents to answer your questions.</system:String>
     <system:String x:Key="KB_AddDocument">Add Document</system:String>
     <system:String x:Key="KB_DeleteDocument">Delete</system:String>
     <system:String x:Key="KB_GenerateEmbeddings">Generate Embeddings</system:String>
@@ -76,6 +77,11 @@
     
     <!-- Embeddings -->
     <system:String x:Key="Emb_Title">Local Embeddings</system:String>
+    <system:String x:Key="Emb_Description">Generate embeddings locally without API - faster, cheaper, more private</system:String>
+    <system:String x:Key="Emb_Mode">Embedding Mode</system:String>
+    <system:String x:Key="Emb_API">API</system:String>
+    <system:String x:Key="Emb_Local">Local</system:String>
+    <system:String x:Key="Emb_Downloaded">Downloaded:</system:String>
     <system:String x:Key="Emb_AvailableModels">Available Models</system:String>
     <system:String x:Key="Emb_Download">Download</system:String>
     <system:String x:Key="Emb_Load">Load</system:String>
@@ -85,6 +91,7 @@
     <system:String x:Key="Emb_NotLoaded">Not Loaded</system:String>
     <system:String x:Key="Emb_Downloading">Downloading...</system:String>
     <system:String x:Key="Emb_TestSimilarity">Test Similarity</system:String>
+    <system:String x:Key="Emb_TestDesc">Check embedding quality on sample Polish words</system:String>
     
     <!-- Settings -->
     <system:String x:Key="Settings_Title">Settings</system:String>
@@ -92,9 +99,10 @@
     <system:String x:Key="Settings_APIConfiguration">API Configuration</system:String>
     <system:String x:Key="Settings_APIKey">API Key</system:String>
     <system:String x:Key="Settings_Endpoint">Endpoint</system:String>
+    <system:String x:Key="Settings_EndpointAuto">(auto)</system:String>
     <system:String x:Key="Settings_Model">Model</system:String>
     <system:String x:Key="Settings_RAGSettings">RAG Settings</system:String>
-    <system:String x:Key="Settings_EnableRAG">Enable RAG</system:String>
+    <system:String x:Key="Settings_EnableRAG">Enable RAG (Retrieval Augmented Generation)</system:String>
     <system:String x:Key="Settings_TopK">Top K Results</system:String>
     <system:String x:Key="Settings_MinSimilarity">Minimum Similarity</system:String>
     <system:String x:Key="Settings_RetrievalMode">Retrieval Mode</system:String>
@@ -103,6 +111,28 @@
     <system:String x:Key="Settings_Save">Save</system:String>
     <system:String x:Key="Settings_Reset">Reset</system:String>
     <system:String x:Key="Settings_Saved">Settings saved</system:String>
+    <system:String x:Key="Settings_OpenRouter">OpenRouter</system:String>
+    <system:String x:Key="Settings_OpenRouterDesc">One key for 400+ models</system:String>
+    <system:String x:Key="Settings_Native">Native</system:String>
+    <system:String x:Key="Settings_NativeDesc">Direct provider API</system:String>
+    <system:String x:Key="Settings_SelectProvider">Select provider:</system:String>
+    <system:String x:Key="Settings_ModelBrowser">Model Browser</system:String>
+    <system:String x:Key="Settings_ModelBrowserDesc">Browse 400+ models from OpenRouter. Select a model to see details and use it.</system:String>
+    <system:String x:Key="Settings_CurrentModel">Current Model</system:String>
+    <system:String x:Key="Settings_ManualModelId">Or enter model ID manually:</system:String>
+    <system:String x:Key="Settings_GenerationSettings">Generation Settings</system:String>
+    <system:String x:Key="Settings_Temperature">Temperature:</system:String>
+    <system:String x:Key="Settings_MaxTokens">Max Tokens:</system:String>
+    <system:String x:Key="Settings_SystemPrompt">System Prompt</system:String>
+    <system:String x:Key="Settings_ContextChunks">Number of context chunks:</system:String>
+    <system:String x:Key="Settings_SimilarityHint">💡 Threshold filters chunks with low similarity. 60% = more results (less precise), 95% = fewer results (very precise). Recommended: 70-80% for general use.</system:String>
+    <system:String x:Key="Settings_LocalLLM">🤖 Local LLM Model</system:String>
+    <system:String x:Key="Settings_LocalLLMModel">Model: Phi-3 Mini 4K Instruct</system:String>
+    <system:String x:Key="Settings_LocalLLMSpecs">3.8B parameters, 4-6 GB RAM, ~15-30 tok/s</system:String>
+    <system:String x:Key="Settings_Status">Status:</system:String>
+    <system:String x:Key="Settings_NotDownloaded">Not downloaded</system:String>
+    <system:String x:Key="Settings_Ready">✓ Ready</system:String>
+    <system:String x:Key="Settings_EncryptionInfo">🛡️ Data is encrypted using AES-256-GCM with keys protected by Windows DPAPI. Your data never leaves this device and remains encrypted at rest.</system:String>
     
     <!-- Status Bar -->
     <system:String x:Key="Status_Offline">Offline Mode</system:String>
@@ -135,5 +165,75 @@
     <system:String x:Key="Common_Loading">Loading...</system:String>
     <system:String x:Key="Common_Copy">Copy</system:String>
     <system:String x:Key="Common_Copied">Copied!</system:String>
+    
+    <!-- Help -->
+    <system:String x:Key="Nav_Help">Help</system:String>
+    <system:String x:Key="Help_Title">Help &amp; About</system:String>
+    <system:String x:Key="Help_About">About</system:String>
+    <system:String x:Key="Help_AppName">WPFLLM - AI Assistant</system:String>
+    <system:String x:Key="Help_Version">Version 1.0</system:String>
+    <system:String x:Key="Help_Author">Created by Damian Tarnowski</system:String>
+    <system:String x:Key="Help_Contact">Contact: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_Description">A powerful desktop AI assistant with RAG (Retrieval-Augmented Generation) capabilities, local embeddings, and document analysis.</system:String>
+    
+    <system:String x:Key="Help_GettingStarted">Getting Started</system:String>
+    <system:String x:Key="Help_GettingStarted_Text">1. Go to Settings and configure your API key (OpenRouter or compatible API)
+2. Start chatting in the Chat tab
+3. Optionally, add documents to the Knowledge Base for RAG-enhanced responses</system:String>
+    
+    <system:String x:Key="Help_Features">Features</system:String>
+    <system:String x:Key="Help_Feature_Chat">Chat - Conversation with AI models with streaming responses</system:String>
+    <system:String x:Key="Help_Feature_KB">Knowledge Base - Import documents (PDF, DOCX, TXT, MD, JSON, CSV) and use them as context for AI responses</system:String>
+    <system:String x:Key="Help_Feature_DocAnalysis">Document Analysis - Analyze documents for summaries, key points, and compliance checks</system:String>
+    <system:String x:Key="Help_Feature_Embeddings">Embeddings - Download and use local embedding models for offline vector search</system:String>
+    <system:String x:Key="Help_Feature_RAG">RAG System - Hybrid retrieval combining vector search and keyword search with RRF fusion</system:String>
+    
+    <system:String x:Key="Help_RAG">RAG System</system:String>
+    <system:String x:Key="Help_RAG_Text">The RAG (Retrieval-Augmented Generation) system enhances AI responses by retrieving relevant context from your documents:
+• Vector Search - Semantic similarity using embeddings
+• Keyword Search - Full-text search (FTS5) for exact matches
+• Hybrid Mode - Combines both methods using Reciprocal Rank Fusion (RRF)
+• Flight Recorder - Debug panel showing sources, candidates, and timing</system:String>
+    
+    <system:String x:Key="Help_Embeddings">Local Embeddings</system:String>
+    <system:String x:Key="Help_Embeddings_Text">Download embedding models to generate vectors locally without API calls:
+1. Go to Embeddings tab
+2. Download a model (recommended: Multilingual E5 Large Instruct)
+3. Click "Load selected model"
+4. Enable "Use local embeddings" in Settings</system:String>
+    
+    <system:String x:Key="Help_Shortcuts">Keyboard Shortcuts</system:String>
+    <system:String x:Key="Help_Shortcut_Send">Enter - Send message</system:String>
+    <system:String x:Key="Help_Shortcut_NewLine">Shift+Enter - New line</system:String>
+    <system:String x:Key="Help_Shortcut_Stop">Escape - Stop generation</system:String>
+
+    <!-- Validation Messages -->
+    <system:String x:Key="Validation_NoApiKey">⚠️ No API key configured! Go to Settings and configure your API key to use chat.</system:String>
+    <system:String x:Key="Validation_NoApiKeyAnalysis">⚠️ No API key configured! Go to Settings and configure your API key to analyze documents.</system:String>
+    <system:String x:Key="Validation_EmptyKnowledgeBase">📚 Knowledge base is empty!
+
+To use RAG (document search):
+1. Click 'Add Documents' and select files
+2. Click 'Generate Embeddings'
+3. Enable RAG in chat settings</system:String>
+    <system:String x:Key="Chat_Welcome">Start a conversation!</system:String>
+    <system:String x:Key="Chat_WelcomeHint">Type a message below and press Enter.
+Make sure you have an API key configured in Settings.</system:String>
+
+    <!-- Button Labels -->
+    <system:String x:Key="Btn_NewChat">+ New Chat</system:String>
+    <system:String x:Key="Btn_DeleteSelected">Delete Selected</system:String>
+    <system:String x:Key="Btn_Export">📤 Export</system:String>
+    <system:String x:Key="Btn_Import">📥 Import</system:String>
+    <system:String x:Key="Btn_Send">Send</system:String>
+    <system:String x:Key="Btn_Stop">Stop</system:String>
+    <system:String x:Key="Btn_AddDocuments">Add Documents</system:String>
+    <system:String x:Key="Btn_GenerateEmbeddings">Generate Embeddings</system:String>
+    <system:String x:Key="Btn_Cancel">Cancel</system:String>
+    <system:String x:Key="Btn_Use">Use</system:String>
+    <system:String x:Key="Btn_ShowDetails">Show Details</system:String>
+    <system:String x:Key="Btn_SaveSettings">Save Settings</system:String>
+    <system:String x:Key="Btn_DownloadModel">Download model (~2.4 GB)</system:String>
+    <system:String x:Key="Chk_UseLocalLlm">Use local LLM model (offline)</system:String>
 
 </ResourceDictionary>

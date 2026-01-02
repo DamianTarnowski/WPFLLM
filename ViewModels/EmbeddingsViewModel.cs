@@ -56,38 +56,53 @@ public partial class EmbeddingsViewModel : ObservableObject
 
     private async Task InitializeAsync()
     {
-        var settings = await _settingsService.GetSettingsAsync();
-        UseLocalEmbeddings = settings.UseLocalEmbeddings;
-
-        foreach (var (id, info) in EmbeddingModels.Available)
+        try
         {
-            var status = await _downloadService.GetDownloadStatusAsync(id);
-            var downloadedSize = await _downloadService.GetDownloadedSizeAsync(id);
+            System.Diagnostics.Debug.WriteLine("[EmbeddingsVM] InitializeAsync started");
             
-            var vm = new EmbeddingModelViewModel
-            {
-                Id = info.Id,
-                DisplayName = info.DisplayName,
-                Description = info.Description,
-                Dimensions = info.Dimensions,
-                SizeBytes = info.SizeBytes,
-                Languages = string.Join(", ", info.Languages),
-                Status = status,
-                DownloadedBytes = downloadedSize,
-                IsSelected = info.Id == settings.LocalEmbeddingModel,
-                QualityRating = info.QualityRating,
-                RamRequired = info.RamRequired,
-                InferenceSpeed = info.InferenceSpeed,
-                RecommendedFor = info.RecommendedFor
-            };
-            
-            AvailableModels.Add(vm);
-            
-            if (vm.IsSelected)
-                SelectedModel = vm;
-        }
+            var settings = await _settingsService.GetSettingsAsync();
+            UseLocalEmbeddings = settings.UseLocalEmbeddings;
 
-        await UpdateCurrentModelStatusAsync();
+            System.Diagnostics.Debug.WriteLine($"[EmbeddingsVM] Loading {EmbeddingModels.Available.Count} models");
+            
+            foreach (var (id, info) in EmbeddingModels.Available)
+            {
+                System.Diagnostics.Debug.WriteLine($"[EmbeddingsVM] Processing model: {id}");
+                
+                var status = await _downloadService.GetDownloadStatusAsync(id);
+                var downloadedSize = await _downloadService.GetDownloadedSizeAsync(id);
+                
+                var vm = new EmbeddingModelViewModel
+                {
+                    Id = info.Id,
+                    DisplayName = info.DisplayName,
+                    Description = info.Description,
+                    Dimensions = info.Dimensions,
+                    SizeBytes = info.SizeBytes,
+                    Languages = string.Join(", ", info.Languages),
+                    Status = status,
+                    DownloadedBytes = downloadedSize,
+                    IsSelected = info.Id == settings.LocalEmbeddingModel,
+                    QualityRating = info.QualityRating,
+                    RamRequired = info.RamRequired,
+                    InferenceSpeed = info.InferenceSpeed,
+                    RecommendedFor = info.RecommendedFor
+                };
+                
+                AvailableModels.Add(vm);
+                
+                if (vm.IsSelected)
+                    SelectedModel = vm;
+            }
+
+            await UpdateCurrentModelStatusAsync();
+            System.Diagnostics.Debug.WriteLine("[EmbeddingsVM] InitializeAsync completed");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[EmbeddingsVM] ERROR: {ex}");
+            StatusMessage = $"Błąd inicjalizacji: {ex.Message}";
+        }
     }
 
     private async Task UpdateCurrentModelStatusAsync()
@@ -275,9 +290,16 @@ public partial class EmbeddingsViewModel : ObservableObject
     [RelayCommand]
     private async Task RunEmbeddingTestAsync()
     {
-        if (!await _localEmbeddingService.IsAvailableAsync())
+        System.Diagnostics.Debug.WriteLine("[EmbeddingsVM] RunEmbeddingTestAsync called");
+        
+        var isAvailable = await _localEmbeddingService.IsAvailableAsync();
+        System.Diagnostics.Debug.WriteLine($"[EmbeddingsVM] Model available: {isAvailable}");
+        
+        if (!isAvailable)
         {
-            StatusMessage = "Najpierw załaduj model!";
+            StatusMessage = "⚠️ Najpierw załaduj model! Kliknij 'Załaduj wybrany model' powyżej.";
+            HasTestResults = true;
+            TestResults = "❌ Model nie jest załadowany.\n\nAby uruchomić test:\n1. Pobierz model (jeśli nie pobrany)\n2. Kliknij 'Załaduj wybrany model'\n3. Uruchom test ponownie";
             return;
         }
 

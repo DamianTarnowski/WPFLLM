@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
@@ -12,6 +13,7 @@ namespace WPFLLM.ViewModels;
 public partial class DocumentAnalysisViewModel : ObservableObject
 {
     private readonly IDocumentAnalysisService _analysisService;
+    private readonly ISettingsService _settingsService;
     private CancellationTokenSource? _analysisCts;
 
     [ObservableProperty]
@@ -50,9 +52,16 @@ public partial class DocumentAnalysisViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasResults;
 
-    public DocumentAnalysisViewModel(IDocumentAnalysisService analysisService)
+    [ObservableProperty]
+    private string _warningMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasWarning;
+
+    public DocumentAnalysisViewModel(IDocumentAnalysisService analysisService, ISettingsService settingsService)
     {
         _analysisService = analysisService;
+        _settingsService = settingsService;
     }
 
     [RelayCommand]
@@ -63,6 +72,18 @@ public partial class DocumentAnalysisViewModel : ObservableObject
             StatusText = "Please enter or import text to analyze.";
             return;
         }
+
+        // Validate API configuration
+        var settings = await _settingsService.GetSettingsAsync();
+        if (string.IsNullOrWhiteSpace(settings.ApiKey))
+        {
+            WarningMessage = GetLocalizedString("Validation_NoApiKeyAnalysis");
+            HasWarning = true;
+            return;
+        }
+
+        HasWarning = false;
+        WarningMessage = string.Empty;
 
         ClearResults();
         IsAnalyzing = true;
@@ -184,6 +205,11 @@ public partial class DocumentAnalysisViewModel : ObservableObject
 
         SuggestedResponse = result.SuggestedResponse;
         Metrics = result.Metrics;
+    }
+
+    private static string GetLocalizedString(string key)
+    {
+        return Application.Current.Resources[key] as string ?? key;
     }
 }
 

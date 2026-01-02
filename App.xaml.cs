@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using WPFLLM.Services;
@@ -5,6 +6,7 @@ using WPFLLM.ViewModels;
 
 namespace WPFLLM;
 
+[SupportedOSPlatform("windows")]
 public partial class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
@@ -12,6 +14,21 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Global exception handlers for debugging
+        AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+        {
+            var ex = args.ExceptionObject as Exception;
+            System.Diagnostics.Debug.WriteLine($"[UNHANDLED] {ex}");
+            MessageBox.Show($"Unhandled Exception:\n{ex?.Message}\n\n{ex?.StackTrace}", "Crash", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+        
+        DispatcherUnhandledException += (s, args) =>
+        {
+            System.Diagnostics.Debug.WriteLine($"[DISPATCHER] {args.Exception}");
+            MessageBox.Show($"UI Exception:\n{args.Exception.Message}\n\n{args.Exception.StackTrace}", "Crash", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
 
         var services = new ServiceCollection();
         ConfigureServices(services);
@@ -49,6 +66,9 @@ public partial class App : Application
         services.AddSingleton<IModelDownloadService, ModelDownloadService>();
         services.AddSingleton<ILocalEmbeddingService, LocalEmbeddingService>();
         services.AddSingleton<ILocalLlmService, LocalLlmService>();
+        services.AddSingleton<ILoggingService, LoggingService>();
+        services.AddSingleton<IRateLimiter, RateLimiter>();
+        services.AddSingleton<IExportService, ExportService>();
 
         services.AddHttpClient();
 

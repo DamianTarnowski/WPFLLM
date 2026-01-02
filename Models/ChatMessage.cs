@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace WPFLLM.Models;
 
 public class ChatMessage
@@ -17,10 +19,16 @@ public class MessageSearchResult
     public double Score { get; set; }
 }
 
-public class Conversation
+public partial class Conversation : ObservableObject
 {
     public long Id { get; set; }
-    public string Title { get; set; } = string.Empty;
+    
+    [ObservableProperty]
+    private string _title = string.Empty;
+    
+    [ObservableProperty]
+    private bool _isEditing;
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

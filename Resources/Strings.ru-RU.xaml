@@ -1,0 +1,239 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- App Title -->
+    <system:String x:Key="AppTitle">WPFLLM - ИИ Ассистент</system:String>
+    
+    <!-- Main Navigation -->
+    <system:String x:Key="Nav_Chat">Чат</system:String>
+    <system:String x:Key="Nav_KnowledgeBase">База знаний</system:String>
+    <system:String x:Key="Nav_DocumentAnalysis">Анализ документов</system:String>
+    <system:String x:Key="Nav_Embeddings">Эмбеддинги</system:String>
+    <system:String x:Key="Nav_Settings">Настройки</system:String>
+    
+    <!-- Chat View -->
+    <system:String x:Key="Chat_NewConversation">Новый разговор</system:String>
+    <system:String x:Key="Chat_DeleteConversation">Удалить</system:String>
+    <system:String x:Key="Chat_Conversations">Разговоры</system:String>
+    <system:String x:Key="Chat_TypeMessage">Введите сообщение...</system:String>
+    <system:String x:Key="Chat_Send">Отправить</system:String>
+    <system:String x:Key="Chat_Stop">Стоп</system:String>
+    <system:String x:Key="Chat_Thinking">Думаю...</system:String>
+    <system:String x:Key="Chat_Sources">Источники</system:String>
+    <system:String x:Key="Chat_NoSources">Источники не использованы</system:String>
+    <system:String x:Key="Chat_RagEnabled">RAG включён</system:String>
+    <system:String x:Key="Chat_RagDisabled">RAG выключен</system:String>
+    
+    <!-- Knowledge Base -->
+    <system:String x:Key="KB_Title">База Знаний</system:String>
+    <system:String x:Key="KB_Description">Добавьте документы для включения RAG. Система будет использовать соответствующий контент из этих документов для ответов на ваши вопросы.</system:String>
+    <system:String x:Key="KB_AddDocument">Добавить Документ</system:String>
+    <system:String x:Key="KB_DeleteDocument">Удалить</system:String>
+    <system:String x:Key="KB_GenerateEmbeddings">Генерировать эмбеддинги</system:String>
+    <system:String x:Key="KB_Documents">Документы</system:String>
+    <system:String x:Key="KB_Chunks">фрагментов</system:String>
+    <system:String x:Key="KB_NoDocuments">Документы не добавлены</system:String>
+    <system:String x:Key="KB_DragDrop">Перетащите файлы или нажмите</system:String>
+    <system:String x:Key="KB_SupportedFormats">Форматы: PDF, DOCX, TXT, MD, JSON, CSV</system:String>
+    <system:String x:Key="KB_Indexing">Индексация...</system:String>
+    <system:String x:Key="KB_Indexed">Проиндексировано</system:String>
+    <system:String x:Key="KB_Pending">Ожидание</system:String>
+    
+    <!-- Document Analysis -->
+    <system:String x:Key="DA_Title">Анализ документов</system:String>
+    <system:String x:Key="DA_PasteText">Вставьте текст для анализа...</system:String>
+    <system:String x:Key="DA_ImportFile">Импорт файла</system:String>
+    <system:String x:Key="DA_Analyze">Анализировать</system:String>
+    <system:String x:Key="DA_Clear">Очистить</system:String>
+    <system:String x:Key="DA_Summary">Резюме</system:String>
+    <system:String x:Key="DA_KeyPoints">Ключевые моменты</system:String>
+    <system:String x:Key="DA_DetectedIntents">Обнаруженные намерения</system:String>
+    <system:String x:Key="DA_RedFlags">Предупреждения</system:String>
+    <system:String x:Key="DA_ComplianceCheck">Проверка соответствия</system:String>
+    <system:String x:Key="DA_SuggestedResponse">Предложенный ответ</system:String>
+    <system:String x:Key="DA_Analyzing">Анализ документа...</system:String>
+    <system:String x:Key="DA_NoIssues">Проблем не обнаружено</system:String>
+    <system:String x:Key="DA_CopyResponse">Копировать ответ</system:String>
+    <system:String x:Key="DA_RegenerateResponse">Перегенерировать</system:String>
+    
+    <!-- RAG Debug Panel -->
+    <system:String x:Key="Debug_Title">Отладка RAG</system:String>
+    <system:String x:Key="Debug_Sources">Источники</system:String>
+    <system:String x:Key="Debug_Metrics">Метрики</system:String>
+    <system:String x:Key="Debug_TopK">Top K</system:String>
+    <system:String x:Key="Debug_Similarity">Схожесть</system:String>
+    <system:String x:Key="Debug_RetrievalMode">Режим поиска</system:String>
+    <system:String x:Key="Debug_Vector">Вектор</system:String>
+    <system:String x:Key="Debug_Keyword">Ключевое слово (FTS)</system:String>
+    <system:String x:Key="Debug_Hybrid">Гибрид</system:String>
+    <system:String x:Key="Debug_Latency">Задержка</system:String>
+    <system:String x:Key="Debug_RetrievalTime">Поиск</system:String>
+    <system:String x:Key="Debug_GenerationTime">Генерация</system:String>
+    <system:String x:Key="Debug_TotalTime">Всего</system:String>
+    <system:String x:Key="Debug_Score">Оценка</system:String>
+    <system:String x:Key="Debug_Document">Документ</system:String>
+    <system:String x:Key="Debug_Chunk">Фрагмент</system:String>
+    
+    <!-- Embeddings -->
+    <system:String x:Key="Emb_Title">Локальные эмбеддинги</system:String>
+    <system:String x:Key="Emb_Description">Генерируйте эмбеддинги локально без API - быстрее, дешевле, приватнее</system:String>
+    <system:String x:Key="Emb_Mode">Режим эмбеддингов</system:String>
+    <system:String x:Key="Emb_API">API</system:String>
+    <system:String x:Key="Emb_Local">Локальный</system:String>
+    <system:String x:Key="Emb_Downloaded">Скачано:</system:String>
+    <system:String x:Key="Emb_AvailableModels">Доступные модели</system:String>
+    <system:String x:Key="Emb_Download">Скачать</system:String>
+    <system:String x:Key="Emb_Load">Загрузить</system:String>
+    <system:String x:Key="Emb_Unload">Выгрузить</system:String>
+    <system:String x:Key="Emb_Delete">Удалить</system:String>
+    <system:String x:Key="Emb_Loaded">Загружено</system:String>
+    <system:String x:Key="Emb_NotLoaded">Не загружено</system:String>
+    <system:String x:Key="Emb_Downloading">Загрузка...</system:String>
+    <system:String x:Key="Emb_TestSimilarity">Тест схожести</system:String>
+    <system:String x:Key="Emb_TestDesc">Проверьте качество эмбеддингов на примерах слов</system:String>
+    
+    <!-- Settings -->
+    <system:String x:Key="Settings_Title">Настройки</system:String>
+    <system:String x:Key="Settings_Language">Язык</system:String>
+    <system:String x:Key="Settings_APIConfiguration">Конфигурация API</system:String>
+    <system:String x:Key="Settings_APIKey">API ключ</system:String>
+    <system:String x:Key="Settings_Endpoint">Эндпоинт</system:String>
+    <system:String x:Key="Settings_EndpointAuto">(авто)</system:String>
+    <system:String x:Key="Settings_Model">Модель</system:String>
+    <system:String x:Key="Settings_RAGSettings">Настройки RAG</system:String>
+    <system:String x:Key="Settings_EnableRAG">Включить RAG (Retrieval Augmented Generation)</system:String>
+    <system:String x:Key="Settings_TopK">Top K результатов</system:String>
+    <system:String x:Key="Settings_MinSimilarity">Мин. схожесть</system:String>
+    <system:String x:Key="Settings_RetrievalMode">Режим поиска</system:String>
+    <system:String x:Key="Settings_Security">Безопасность</system:String>
+    <system:String x:Key="Settings_EncryptData">Шифровать данные</system:String>
+    <system:String x:Key="Settings_Save">Сохранить</system:String>
+    <system:String x:Key="Settings_Reset">Сбросить</system:String>
+    <system:String x:Key="Settings_Saved">Настройки сохранены</system:String>
+    <system:String x:Key="Settings_OpenRouter">OpenRouter</system:String>
+    <system:String x:Key="Settings_OpenRouterDesc">Один ключ для 400+ моделей</system:String>
+    <system:String x:Key="Settings_Native">Нативный</system:String>
+    <system:String x:Key="Settings_NativeDesc">Прямой API провайдера</system:String>
+    <system:String x:Key="Settings_SelectProvider">Выбрать провайдера:</system:String>
+    <system:String x:Key="Settings_ModelBrowser">Браузер моделей</system:String>
+    <system:String x:Key="Settings_ModelBrowserDesc">Просмотрите 400+ моделей из OpenRouter. Выберите модель, чтобы увидеть детали и использовать её.</system:String>
+    <system:String x:Key="Settings_CurrentModel">Текущая модель</system:String>
+    <system:String x:Key="Settings_ManualModelId">Или введите ID модели вручную:</system:String>
+    <system:String x:Key="Settings_GenerationSettings">Настройки генерации</system:String>
+    <system:String x:Key="Settings_Temperature">Температура:</system:String>
+    <system:String x:Key="Settings_MaxTokens">Макс. токенов:</system:String>
+    <system:String x:Key="Settings_SystemPrompt">Системный промпт</system:String>
+    <system:String x:Key="Settings_ContextChunks">Количество контекстных фрагментов:</system:String>
+    <system:String x:Key="Settings_SimilarityHint">💡 Порог фильтрует фрагменты с низкой схожестью. 60% = больше результатов (менее точных), 95% = меньше результатов (очень точных). Рекомендуется: 70-80% для общего использования.</system:String>
+    <system:String x:Key="Settings_LocalLLM">🤖 Локальная LLM модель</system:String>
+    <system:String x:Key="Settings_LocalLLMModel">Модель: Phi-3 Mini 4K Instruct</system:String>
+    <system:String x:Key="Settings_LocalLLMSpecs">3.8B параметров, 4-6 ГБ RAM, ~15-30 ток/с</system:String>
+    <system:String x:Key="Settings_Status">Статус:</system:String>
+    <system:String x:Key="Settings_NotDownloaded">Не скачано</system:String>
+    <system:String x:Key="Settings_Ready">✓ Готово</system:String>
+    <system:String x:Key="Settings_EncryptionInfo">🛡️ Данные шифруются с помощью AES-256-GCM, ключи защищены Windows DPAPI. Ваши данные никогда не покидают это устройство и остаются зашифрованными.</system:String>
+    
+    <!-- Status Bar -->
+    <system:String x:Key="Status_Offline">Офлайн режим</system:String>
+    <system:String x:Key="Status_Online">Онлайн</system:String>
+    <system:String x:Key="Status_Encrypted">Зашифровано</system:String>
+    <system:String x:Key="Status_NotEncrypted">Не зашифровано</system:String>
+    <system:String x:Key="Status_NetworkCalls">Сетевые вызовы</system:String>
+    <system:String x:Key="Status_Ready">Готово</system:String>
+    <system:String x:Key="Status_Processing">Обработка...</system:String>
+    
+    <!-- Workspaces -->
+    <system:String x:Key="WS_Title">Рабочие пространства</system:String>
+    <system:String x:Key="WS_Create">Создать пространство</system:String>
+    <system:String x:Key="WS_Delete">Удалить</system:String>
+    <system:String x:Key="WS_Rename">Переименовать</system:String>
+    <system:String x:Key="WS_Documents">документов</system:String>
+    <system:String x:Key="WS_LastUpdated">Последнее обновление</system:String>
+    <system:String x:Key="WS_Default">Пространство по умолчанию</system:String>
+    
+    <!-- Common -->
+    <system:String x:Key="Common_Yes">Да</system:String>
+    <system:String x:Key="Common_No">Нет</system:String>
+    <system:String x:Key="Common_OK">ОК</system:String>
+    <system:String x:Key="Common_Cancel">Отмена</system:String>
+    <system:String x:Key="Common_Close">Закрыть</system:String>
+    <system:String x:Key="Common_Error">Ошибка</system:String>
+    <system:String x:Key="Common_Warning">Предупреждение</system:String>
+    <system:String x:Key="Common_Info">Информация</system:String>
+    <system:String x:Key="Common_Confirm">Подтвердить</system:String>
+    <system:String x:Key="Common_Loading">Загрузка...</system:String>
+    <system:String x:Key="Common_Copy">Копировать</system:String>
+    <system:String x:Key="Common_Copied">Скопировано!</system:String>
+    
+    <!-- Help -->
+    <system:String x:Key="Nav_Help">Помощь</system:String>
+    <system:String x:Key="Help_Title">Помощь и информация</system:String>
+    <system:String x:Key="Help_About">О программе</system:String>
+    <system:String x:Key="Help_AppName">WPFLLM - ИИ Ассистент</system:String>
+    <system:String x:Key="Help_Version">Версия 1.0</system:String>
+    <system:String x:Key="Help_Author">Создано: Damian Tarnowski</system:String>
+    <system:String x:Key="Help_Contact">Контакт: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_Description">Мощный настольный ИИ-ассистент с возможностями RAG (Retrieval-Augmented Generation), локальными эмбеддингами и анализом документов.</system:String>
+    
+    <system:String x:Key="Help_GettingStarted">Начало работы</system:String>
+    <system:String x:Key="Help_GettingStarted_Text">1. Перейдите в Настройки и настройте ваш API ключ (OpenRouter или совместимый API)
+2. Начните общение во вкладке Чат
+3. Опционально добавьте документы в Базу знаний для ответов с поддержкой RAG</system:String>
+    
+    <system:String x:Key="Help_Features">Функции</system:String>
+    <system:String x:Key="Help_Feature_Chat">Чат - Разговор с ИИ моделями с потоковыми ответами</system:String>
+    <system:String x:Key="Help_Feature_KB">База знаний - Импортируйте документы (PDF, DOCX, TXT, MD, JSON, CSV) и используйте их как контекст для ответов ИИ</system:String>
+    <system:String x:Key="Help_Feature_DocAnalysis">Анализ документов - Анализируйте документы для резюме, ключевых моментов и проверки соответствия</system:String>
+    <system:String x:Key="Help_Feature_Embeddings">Эмбеддинги - Скачайте и используйте локальные модели эмбеддингов для офлайн векторного поиска</system:String>
+    <system:String x:Key="Help_Feature_RAG">Система RAG - Гибридный поиск, объединяющий векторный поиск и поиск по ключевым словам с RRF фузией</system:String>
+    
+    <system:String x:Key="Help_RAG">Система RAG</system:String>
+    <system:String x:Key="Help_RAG_Text">Система RAG (Retrieval-Augmented Generation) улучшает ответы ИИ, извлекая релевантный контекст из ваших документов:
+• Векторный поиск - Семантическое сходство с использованием эмбеддингов
+• Поиск по ключевым словам - Полнотекстовый поиск (FTS5) для точных совпадений
+• Гибридный режим - Объединяет оба метода с помощью Reciprocal Rank Fusion (RRF)
+• Flight Recorder - Панель отладки, показывающая источники, кандидатов и время</system:String>
+    
+    <system:String x:Key="Help_Embeddings">Локальные эмбеддинги</system:String>
+    <system:String x:Key="Help_Embeddings_Text">Скачайте модели эмбеддингов для локальной генерации векторов без API вызовов:
+1. Перейдите во вкладку Эмбеддинги
+2. Скачайте модель (рекомендуется: Multilingual E5 Large Instruct)
+3. Нажмите "Загрузить выбранную модель"
+4. Включите "Использовать локальные эмбеддинги" в Настройках</system:String>
+    
+    <system:String x:Key="Help_Shortcuts">Горячие клавиши</system:String>
+    <system:String x:Key="Help_Shortcut_Send">Enter - Отправить сообщение</system:String>
+    <system:String x:Key="Help_Shortcut_NewLine">Shift+Enter - Новая строка</system:String>
+    <system:String x:Key="Help_Shortcut_Stop">Escape - Остановить генерацию</system:String>
+
+    <!-- Validation Messages -->
+    <system:String x:Key="Validation_NoApiKey">⚠️ API ключ не настроен! Перейдите в Настройки и настройте API ключ для использования чата.</system:String>
+    <system:String x:Key="Validation_NoApiKeyAnalysis">⚠️ API ключ не настроен! Перейдите в Настройки и настройте API ключ для анализа документов.</system:String>
+    <system:String x:Key="Validation_EmptyKnowledgeBase">📚 База знаний пуста!
+
+Чтобы использовать RAG (поиск по документам):
+1. Нажмите 'Добавить документы' и выберите файлы
+2. Нажмите 'Генерировать эмбеддинги'
+3. Включите RAG в настройках чата</system:String>
+    <system:String x:Key="Chat_Welcome">Начните разговор!</system:String>
+    <system:String x:Key="Chat_WelcomeHint">Введите сообщение ниже и нажмите Enter.
+Убедитесь, что у вас настроен API ключ в Настройках.</system:String>
+
+    <!-- Button Labels -->
+    <system:String x:Key="Btn_NewChat">+ Новый чат</system:String>
+    <system:String x:Key="Btn_DeleteSelected">Удалить выбранное</system:String>
+    <system:String x:Key="Btn_Export">📤 Экспорт</system:String>
+    <system:String x:Key="Btn_Import">📥 Импорт</system:String>
+    <system:String x:Key="Btn_Send">Отправить</system:String>
+    <system:String x:Key="Btn_Stop">Стоп</system:String>
+    <system:String x:Key="Btn_AddDocuments">Добавить документы</system:String>
+    <system:String x:Key="Btn_GenerateEmbeddings">Генерировать эмбеддинги</system:String>
+    <system:String x:Key="Btn_Cancel">Отмена</system:String>
+    <system:String x:Key="Btn_Use">Использовать</system:String>
+    <system:String x:Key="Btn_ShowDetails">Показать детали</system:String>
+    <system:String x:Key="Btn_SaveSettings">Сохранить настройки</system:String>
+    <system:String x:Key="Btn_DownloadModel">Скачать модель (~2.4 ГБ)</system:String>
+    <system:String x:Key="Chk_UseLocalLlm">Использовать локальную LLM модель (офлайн)</system:String>
+
+</ResourceDictionary>

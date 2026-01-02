@@ -11,6 +11,8 @@ public class ChatService : IChatService
     private readonly IRagService _ragService;
     private readonly ISettingsService _settingsService;
 
+    public event EventHandler<RagContextInfo>? RagContextRetrieved;
+
     public ChatService(
         IDatabaseService database, 
         ILlmService llmService, 
@@ -49,10 +51,25 @@ public class ChatService : IChatService
 
         var settings = await _settingsService.GetSettingsAsync();
         string? ragContext = null;
+        int chunksFound = 0;
 
         if (settings.UseRag)
         {
-            ragContext = await _ragService.GetRelevantContextAsync(userMessage, settings.RagTopK, settings.RagMinSimilarity);
+            var (retrievalResult, trace) = await _ragService.RetrieveWithTraceAsync(
+                userMessage, 
+                settings.RagTopK, 
+                settings.RagMinSimilarity, 
+                settings.RagRetrievalMode,
+                settings.RrfK,
+                settings.HybridBalance);
+            
+            ragContext = retrievalResult.CombinedContext;
+            chunksFound = retrievalResult.Chunks.Count;
+            RagContextRetrieved?.Invoke(this, new RagContextInfo(true, chunksFound, ragContext, retrievalResult, trace));
+        }
+        else
+        {
+            RagContextRetrieved?.Invoke(this, new RagContextInfo(false, 0, string.Empty));
         }
 
         var messages = await _database.GetMessagesAsync(conversationId);
@@ -128,6 +145,24 @@ public class ChatService : IChatService
     {
         var messages = await _database.GetMessagesWithoutEmbeddingsAsync();
         return messages.Count;
+    }
+
+    public async Task<string> GenerateConversationTitleAsync(string userMessage, string assistantResponse, CancellationToken cancellationToken = default)
+    {
+        var titlePrompt = new List<ChatMessage>
+        {
+            new() { Role = "system", Content = "Generate a very short title (3-6 words max) for this conversation. Reply with ONLY the title, no quotes, no punctuation at the end." },
+            new() { Role = "user", Content = $"User: {userMessage}\n\nAssistant: {assistantResponse[..Math.Min(200, assistantResponse.Length)]}" }
+        };
+
+        var titleBuilder = new System.Text.StringBuilder();
+        await foreach (var chunk in _llmService.StreamChatAsync(titlePrompt, null, cancellationToken))
+        {
+            titleBuilder.Append(chunk);
+        }
+
+        var title = titleBuilder.ToString().Trim().Trim('"').Trim('\'');
+        return title.Length > 50 ? title[..50] : title;
     }
 
     private static double CosineSimilarity(float[] a, float[] b)

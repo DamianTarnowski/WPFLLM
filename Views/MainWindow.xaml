@@ -44,6 +44,10 @@
             <TabItem Header="{DynamicResource Nav_Settings}">
                 <views:SettingsView DataContext="{Binding SettingsViewModel}"/>
             </TabItem>
+
+            <TabItem Header="{DynamicResource Nav_Help}">
+                <views:HelpView/>
+            </TabItem>
         </TabControl>
 
         <!-- Status Bar -->

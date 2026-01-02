@@ -12,7 +12,16 @@ public class LocalizationService : ILocalizationService
     public IReadOnlyList<LanguageInfo> AvailableLanguages { get; } = new List<LanguageInfo>
     {
         new("en-US", "English", "English"),
-        new("pl-PL", "Polski", "Polish")
+        new("pl-PL", "Polski", "Polish"),
+        new("de-DE", "Deutsch", "German"),
+        new("fr-FR", "Français", "French"),
+        new("es-ES", "Español", "Spanish"),
+        new("it-IT", "Italiano", "Italian"),
+        new("pt-PT", "Português", "Portuguese"),
+        new("nl-NL", "Nederlands", "Dutch"),
+        new("ru-RU", "Русский", "Russian"),
+        new("uk-UA", "Українська", "Ukrainian"),
+        new("zh-CN", "简体中文", "Chinese (Simplified)")
     };
 
     public event EventHandler? LanguageChanged;

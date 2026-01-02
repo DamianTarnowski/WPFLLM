@@ -28,9 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TokenizerRust\target\release\hf_tokenizer.dll">
+    <Content Include="TokenizerRust\target\release\hf_tokenizer.dll" Condition="Exists('TokenizerRust\target\release\hf_tokenizer.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <Link>hf_tokenizer.dll</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

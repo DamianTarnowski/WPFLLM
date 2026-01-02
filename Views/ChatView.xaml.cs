@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using WPFLLM.Models;
 using WPFLLM.ViewModels;
 
 namespace WPFLLM.Views;
@@ -59,6 +60,49 @@ public partial class ChatView : UserControl
             DataContext is ChatViewModel vm)
         {
             vm.GoToSearchResultCommand.Execute(result);
+        }
+    }
+
+    private void ConversationTitle_DoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2 && sender is FrameworkElement element && element.DataContext is Conversation conv)
+        {
+            conv.IsEditing = true;
+        }
+    }
+
+    private void ConversationTitleEdit_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (sender is TextBox textBox && textBox.DataContext is Conversation conv)
+        {
+            if (e.Key == Key.Enter)
+            {
+                conv.IsEditing = false;
+                SaveConversationTitle(conv);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                conv.IsEditing = false;
+                e.Handled = true;
+            }
+        }
+    }
+
+    private void ConversationTitleEdit_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox textBox && textBox.DataContext is Conversation conv && conv.IsEditing)
+        {
+            conv.IsEditing = false;
+            SaveConversationTitle(conv);
+        }
+    }
+
+    private async void SaveConversationTitle(Conversation conv)
+    {
+        if (DataContext is ChatViewModel vm)
+        {
+            await vm.UpdateConversationTitleCommand.ExecuteAsync(conv);
         }
     }
 }

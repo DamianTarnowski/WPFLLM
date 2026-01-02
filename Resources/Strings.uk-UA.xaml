@@ -1,0 +1,239 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- App Title -->
+    <system:String x:Key="AppTitle">WPFLLM - ШІ Асистент</system:String>
+    
+    <!-- Main Navigation -->
+    <system:String x:Key="Nav_Chat">Чат</system:String>
+    <system:String x:Key="Nav_KnowledgeBase">База знань</system:String>
+    <system:String x:Key="Nav_DocumentAnalysis">Аналіз документів</system:String>
+    <system:String x:Key="Nav_Embeddings">Ембедінги</system:String>
+    <system:String x:Key="Nav_Settings">Налаштування</system:String>
+    
+    <!-- Chat View -->
+    <system:String x:Key="Chat_NewConversation">Нова розмова</system:String>
+    <system:String x:Key="Chat_DeleteConversation">Видалити</system:String>
+    <system:String x:Key="Chat_Conversations">Розмови</system:String>
+    <system:String x:Key="Chat_TypeMessage">Введіть повідомлення...</system:String>
+    <system:String x:Key="Chat_Send">Надіслати</system:String>
+    <system:String x:Key="Chat_Stop">Стоп</system:String>
+    <system:String x:Key="Chat_Thinking">Думаю...</system:String>
+    <system:String x:Key="Chat_Sources">Джерела</system:String>
+    <system:String x:Key="Chat_NoSources">Джерела не використано</system:String>
+    <system:String x:Key="Chat_RagEnabled">RAG увімкнено</system:String>
+    <system:String x:Key="Chat_RagDisabled">RAG вимкнено</system:String>
+    
+    <!-- Knowledge Base -->
+    <system:String x:Key="KB_Title">База Знань</system:String>
+    <system:String x:Key="KB_Description">Додайте документи для увімкнення RAG. Система використовуватиме відповідний вміст з цих документів для відповідей на ваші запитання.</system:String>
+    <system:String x:Key="KB_AddDocument">Додати Документ</system:String>
+    <system:String x:Key="KB_DeleteDocument">Видалити</system:String>
+    <system:String x:Key="KB_GenerateEmbeddings">Генерувати ембедінги</system:String>
+    <system:String x:Key="KB_Documents">Документи</system:String>
+    <system:String x:Key="KB_Chunks">фрагментів</system:String>
+    <system:String x:Key="KB_NoDocuments">Документів не додано</system:String>
+    <system:String x:Key="KB_DragDrop">Перетягніть файли або натисніть</system:String>
+    <system:String x:Key="KB_SupportedFormats">Формати: PDF, DOCX, TXT, MD, JSON, CSV</system:String>
+    <system:String x:Key="KB_Indexing">Індексація...</system:String>
+    <system:String x:Key="KB_Indexed">Проіндексовано</system:String>
+    <system:String x:Key="KB_Pending">Очікування</system:String>
+    
+    <!-- Document Analysis -->
+    <system:String x:Key="DA_Title">Аналіз документів</system:String>
+    <system:String x:Key="DA_PasteText">Вставте текст для аналізу...</system:String>
+    <system:String x:Key="DA_ImportFile">Імпорт файлу</system:String>
+    <system:String x:Key="DA_Analyze">Аналізувати</system:String>
+    <system:String x:Key="DA_Clear">Очистити</system:String>
+    <system:String x:Key="DA_Summary">Резюме</system:String>
+    <system:String x:Key="DA_KeyPoints">Ключові моменти</system:String>
+    <system:String x:Key="DA_DetectedIntents">Виявлені наміри</system:String>
+    <system:String x:Key="DA_RedFlags">Попередження</system:String>
+    <system:String x:Key="DA_ComplianceCheck">Перевірка відповідності</system:String>
+    <system:String x:Key="DA_SuggestedResponse">Запропонована відповідь</system:String>
+    <system:String x:Key="DA_Analyzing">Аналіз документа...</system:String>
+    <system:String x:Key="DA_NoIssues">Проблем не виявлено</system:String>
+    <system:String x:Key="DA_CopyResponse">Копіювати відповідь</system:String>
+    <system:String x:Key="DA_RegenerateResponse">Перегенерувати</system:String>
+    
+    <!-- RAG Debug Panel -->
+    <system:String x:Key="Debug_Title">Налагодження RAG</system:String>
+    <system:String x:Key="Debug_Sources">Джерела</system:String>
+    <system:String x:Key="Debug_Metrics">Метрики</system:String>
+    <system:String x:Key="Debug_TopK">Top K</system:String>
+    <system:String x:Key="Debug_Similarity">Схожість</system:String>
+    <system:String x:Key="Debug_RetrievalMode">Режим пошуку</system:String>
+    <system:String x:Key="Debug_Vector">Вектор</system:String>
+    <system:String x:Key="Debug_Keyword">Ключове слово (FTS)</system:String>
+    <system:String x:Key="Debug_Hybrid">Гібрид</system:String>
+    <system:String x:Key="Debug_Latency">Затримка</system:String>
+    <system:String x:Key="Debug_RetrievalTime">Пошук</system:String>
+    <system:String x:Key="Debug_GenerationTime">Генерація</system:String>
+    <system:String x:Key="Debug_TotalTime">Всього</system:String>
+    <system:String x:Key="Debug_Score">Оцінка</system:String>
+    <system:String x:Key="Debug_Document">Документ</system:String>
+    <system:String x:Key="Debug_Chunk">Фрагмент</system:String>
+    
+    <!-- Embeddings -->
+    <system:String x:Key="Emb_Title">Локальні ембедінги</system:String>
+    <system:String x:Key="Emb_Description">Генеруйте ембедінги локально без API - швидше, дешевше, приватніше</system:String>
+    <system:String x:Key="Emb_Mode">Режим ембедінгів</system:String>
+    <system:String x:Key="Emb_API">API</system:String>
+    <system:String x:Key="Emb_Local">Локальний</system:String>
+    <system:String x:Key="Emb_Downloaded">Завантажено:</system:String>
+    <system:String x:Key="Emb_AvailableModels">Доступні моделі</system:String>
+    <system:String x:Key="Emb_Download">Завантажити</system:String>
+    <system:String x:Key="Emb_Load">Завантажити</system:String>
+    <system:String x:Key="Emb_Unload">Вивантажити</system:String>
+    <system:String x:Key="Emb_Delete">Видалити</system:String>
+    <system:String x:Key="Emb_Loaded">Завантажено</system:String>
+    <system:String x:Key="Emb_NotLoaded">Не завантажено</system:String>
+    <system:String x:Key="Emb_Downloading">Завантаження...</system:String>
+    <system:String x:Key="Emb_TestSimilarity">Тест схожості</system:String>
+    <system:String x:Key="Emb_TestDesc">Перевірте якість ембедінгів на прикладах слів</system:String>
+    
+    <!-- Settings -->
+    <system:String x:Key="Settings_Title">Налаштування</system:String>
+    <system:String x:Key="Settings_Language">Мова</system:String>
+    <system:String x:Key="Settings_APIConfiguration">Конфігурація API</system:String>
+    <system:String x:Key="Settings_APIKey">API ключ</system:String>
+    <system:String x:Key="Settings_Endpoint">Ендпоінт</system:String>
+    <system:String x:Key="Settings_EndpointAuto">(авто)</system:String>
+    <system:String x:Key="Settings_Model">Модель</system:String>
+    <system:String x:Key="Settings_RAGSettings">Налаштування RAG</system:String>
+    <system:String x:Key="Settings_EnableRAG">Увімкнути RAG (Retrieval Augmented Generation)</system:String>
+    <system:String x:Key="Settings_TopK">Top K результатів</system:String>
+    <system:String x:Key="Settings_MinSimilarity">Мін. схожість</system:String>
+    <system:String x:Key="Settings_RetrievalMode">Режим пошуку</system:String>
+    <system:String x:Key="Settings_Security">Безпека</system:String>
+    <system:String x:Key="Settings_EncryptData">Шифрувати дані</system:String>
+    <system:String x:Key="Settings_Save">Зберегти</system:String>
+    <system:String x:Key="Settings_Reset">Скинути</system:String>
+    <system:String x:Key="Settings_Saved">Налаштування збережено</system:String>
+    <system:String x:Key="Settings_OpenRouter">OpenRouter</system:String>
+    <system:String x:Key="Settings_OpenRouterDesc">Один ключ для 400+ моделей</system:String>
+    <system:String x:Key="Settings_Native">Нативний</system:String>
+    <system:String x:Key="Settings_NativeDesc">Прямий API провайдера</system:String>
+    <system:String x:Key="Settings_SelectProvider">Вибрати провайдера:</system:String>
+    <system:String x:Key="Settings_ModelBrowser">Браузер моделей</system:String>
+    <system:String x:Key="Settings_ModelBrowserDesc">Перегляньте 400+ моделей з OpenRouter. Виберіть модель, щоб побачити деталі та використати її.</system:String>
+    <system:String x:Key="Settings_CurrentModel">Поточна модель</system:String>
+    <system:String x:Key="Settings_ManualModelId">Або введіть ID моделі вручну:</system:String>
+    <system:String x:Key="Settings_GenerationSettings">Налаштування генерації</system:String>
+    <system:String x:Key="Settings_Temperature">Температура:</system:String>
+    <system:String x:Key="Settings_MaxTokens">Макс. токенів:</system:String>
+    <system:String x:Key="Settings_SystemPrompt">Системний промпт</system:String>
+    <system:String x:Key="Settings_ContextChunks">Кількість контекстних фрагментів:</system:String>
+    <system:String x:Key="Settings_SimilarityHint">💡 Поріг фільтрує фрагменти з низькою схожістю. 60% = більше результатів (менш точних), 95% = менше результатів (дуже точних). Рекомендовано: 70-80% для загального використання.</system:String>
+    <system:String x:Key="Settings_LocalLLM">🤖 Локальна LLM модель</system:String>
+    <system:String x:Key="Settings_LocalLLMModel">Модель: Phi-3 Mini 4K Instruct</system:String>
+    <system:String x:Key="Settings_LocalLLMSpecs">3.8B параметрів, 4-6 ГБ RAM, ~15-30 ток/с</system:String>
+    <system:String x:Key="Settings_Status">Статус:</system:String>
+    <system:String x:Key="Settings_NotDownloaded">Не завантажено</system:String>
+    <system:String x:Key="Settings_Ready">✓ Готово</system:String>
+    <system:String x:Key="Settings_EncryptionInfo">🛡️ Дані шифруються за допомогою AES-256-GCM, ключі захищені Windows DPAPI. Ваші дані ніколи не покидають цей пристрій і залишаються зашифрованими.</system:String>
+    
+    <!-- Status Bar -->
+    <system:String x:Key="Status_Offline">Офлайн режим</system:String>
+    <system:String x:Key="Status_Online">Онлайн</system:String>
+    <system:String x:Key="Status_Encrypted">Зашифровано</system:String>
+    <system:String x:Key="Status_NotEncrypted">Не зашифровано</system:String>
+    <system:String x:Key="Status_NetworkCalls">Мережеві виклики</system:String>
+    <system:String x:Key="Status_Ready">Готово</system:String>
+    <system:String x:Key="Status_Processing">Обробка...</system:String>
+    
+    <!-- Workspaces -->
+    <system:String x:Key="WS_Title">Робочі простори</system:String>
+    <system:String x:Key="WS_Create">Створити простір</system:String>
+    <system:String x:Key="WS_Delete">Видалити</system:String>
+    <system:String x:Key="WS_Rename">Перейменувати</system:String>
+    <system:String x:Key="WS_Documents">документів</system:String>
+    <system:String x:Key="WS_LastUpdated">Останнє оновлення</system:String>
+    <system:String x:Key="WS_Default">Простір за замовчуванням</system:String>
+    
+    <!-- Common -->
+    <system:String x:Key="Common_Yes">Так</system:String>
+    <system:String x:Key="Common_No">Ні</system:String>
+    <system:String x:Key="Common_OK">ОК</system:String>
+    <system:String x:Key="Common_Cancel">Скасувати</system:String>
+    <system:String x:Key="Common_Close">Закрити</system:String>
+    <system:String x:Key="Common_Error">Помилка</system:String>
+    <system:String x:Key="Common_Warning">Попередження</system:String>
+    <system:String x:Key="Common_Info">Інформація</system:String>
+    <system:String x:Key="Common_Confirm">Підтвердити</system:String>
+    <system:String x:Key="Common_Loading">Завантаження...</system:String>
+    <system:String x:Key="Common_Copy">Копіювати</system:String>
+    <system:String x:Key="Common_Copied">Скопійовано!</system:String>
+    
+    <!-- Help -->
+    <system:String x:Key="Nav_Help">Допомога</system:String>
+    <system:String x:Key="Help_Title">Допомога та інформація</system:String>
+    <system:String x:Key="Help_About">Про програму</system:String>
+    <system:String x:Key="Help_AppName">WPFLLM - ШІ Асистент</system:String>
+    <system:String x:Key="Help_Version">Версія 1.0</system:String>
+    <system:String x:Key="Help_Author">Створено: Damian Tarnowski</system:String>
+    <system:String x:Key="Help_Contact">Контакт: hdtdtr@gmail.com</system:String>
+    <system:String x:Key="Help_Description">Потужний настільний ШІ-асистент з можливостями RAG (Retrieval-Augmented Generation), локальними ембедінгами та аналізом документів.</system:String>
+    
+    <system:String x:Key="Help_GettingStarted">Початок роботи</system:String>
+    <system:String x:Key="Help_GettingStarted_Text">1. Перейдіть до Налаштувань і налаштуйте ваш API ключ (OpenRouter або сумісний API)
+2. Почніть спілкування у вкладці Чат
+3. За бажанням додайте документи до Бази знань для відповідей з підтримкою RAG</system:String>
+    
+    <system:String x:Key="Help_Features">Функції</system:String>
+    <system:String x:Key="Help_Feature_Chat">Чат - Розмова з ШІ моделями з потоковими відповідями</system:String>
+    <system:String x:Key="Help_Feature_KB">База знань - Імпортуйте документи (PDF, DOCX, TXT, MD, JSON, CSV) і використовуйте їх як контекст для відповідей ШІ</system:String>
+    <system:String x:Key="Help_Feature_DocAnalysis">Аналіз документів - Аналізуйте документи для резюме, ключових моментів і перевірки відповідності</system:String>
+    <system:String x:Key="Help_Feature_Embeddings">Ембедінги - Завантажте і використовуйте локальні моделі ембедінгів для офлайн векторного пошуку</system:String>
+    <system:String x:Key="Help_Feature_RAG">Система RAG - Гібридний пошук, що поєднує векторний пошук і пошук за ключовими словами з RRF фузією</system:String>
+    
+    <system:String x:Key="Help_RAG">Система RAG</system:String>
+    <system:String x:Key="Help_RAG_Text">Система RAG (Retrieval-Augmented Generation) покращує відповіді ШІ, витягуючи релевантний контекст з ваших документів:
+• Векторний пошук - Семантична схожість з використанням ембедінгів
+• Пошук за ключовими словами - Повнотекстовий пошук (FTS5) для точних збігів
+• Гібридний режим - Поєднує обидва методи за допомогою Reciprocal Rank Fusion (RRF)
+• Flight Recorder - Панель налагодження, що показує джерела, кандидатів і час</system:String>
+    
+    <system:String x:Key="Help_Embeddings">Локальні ембедінги</system:String>
+    <system:String x:Key="Help_Embeddings_Text">Завантажте моделі ембедінгів для локальної генерації векторів без API викликів:
+1. Перейдіть до вкладки Ембедінги
+2. Завантажте модель (рекомендовано: Multilingual E5 Large Instruct)
+3. Натисніть "Завантажити вибрану модель"
+4. Увімкніть "Використовувати локальні ембедінги" в Налаштуваннях</system:String>
+    
+    <system:String x:Key="Help_Shortcuts">Гарячі клавіші</system:String>
+    <system:String x:Key="Help_Shortcut_Send">Enter - Надіслати повідомлення</system:String>
+    <system:String x:Key="Help_Shortcut_NewLine">Shift+Enter - Новий рядок</system:String>
+    <system:String x:Key="Help_Shortcut_Stop">Escape - Зупинити генерацію</system:String>
+
+    <!-- Validation Messages -->
+    <system:String x:Key="Validation_NoApiKey">⚠️ API ключ не налаштовано! Перейдіть до Налаштувань і налаштуйте API ключ для використання чату.</system:String>
+    <system:String x:Key="Validation_NoApiKeyAnalysis">⚠️ API ключ не налаштовано! Перейдіть до Налаштувань і налаштуйте API ключ для аналізу документів.</system:String>
+    <system:String x:Key="Validation_EmptyKnowledgeBase">📚 База знань порожня!
+
+Щоб використовувати RAG (пошук по документах):
+1. Натисніть 'Додати документи' і виберіть файли
+2. Натисніть 'Генерувати ембедінги'
+3. Увімкніть RAG в налаштуваннях чату</system:String>
+    <system:String x:Key="Chat_Welcome">Почніть розмову!</system:String>
+    <system:String x:Key="Chat_WelcomeHint">Введіть повідомлення нижче і натисніть Enter.
+Переконайтеся, що у вас налаштовано API ключ в Налаштуваннях.</system:String>
+
+    <!-- Button Labels -->
+    <system:String x:Key="Btn_NewChat">+ Новий чат</system:String>
+    <system:String x:Key="Btn_DeleteSelected">Видалити вибране</system:String>
+    <system:String x:Key="Btn_Export">📤 Експорт</system:String>
+    <system:String x:Key="Btn_Import">📥 Імпорт</system:String>
+    <system:String x:Key="Btn_Send">Надіслати</system:String>
+    <system:String x:Key="Btn_Stop">Стоп</system:String>
+    <system:String x:Key="Btn_AddDocuments">Додати документи</system:String>
+    <system:String x:Key="Btn_GenerateEmbeddings">Генерувати ембедінги</system:String>
+    <system:String x:Key="Btn_Cancel">Скасувати</system:String>
+    <system:String x:Key="Btn_Use">Використати</system:String>
+    <system:String x:Key="Btn_ShowDetails">Показати деталі</system:String>
+    <system:String x:Key="Btn_SaveSettings">Зберегти налаштування</system:String>
+    <system:String x:Key="Btn_DownloadModel">Завантажити модель (~2.4 ГБ)</system:String>
+    <system:String x:Key="Chk_UseLocalLlm">Використовувати локальну LLM модель (офлайн)</system:String>
+
+</ResourceDictionary>

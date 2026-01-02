@@ -65,7 +65,7 @@
                                            FontWeight="Bold" 
                                            FontSize="14"
                                            Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Text="Jeden klucz do 400+ modeli" 
+                                <TextBlock Text="{DynamicResource Settings_OpenRouterDesc}" 
                                            FontSize="11"
                                            Foreground="{StaticResource TextMutedBrush}"/>
                             </StackPanel>
@@ -81,7 +81,7 @@
                                            FontWeight="Bold" 
                                            FontSize="14"
                                            Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Text="Bezpośrednie API dostawcy" 
+                                <TextBlock Text="{DynamicResource Settings_NativeDesc}" 
                                            FontSize="11"
                                            Foreground="{StaticResource TextMutedBrush}"/>
                             </StackPanel>
@@ -90,7 +90,7 @@
                         <!-- Native Provider Selection (only when Native mode) -->
                         <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0"
                                     Visibility="{Binding UseOpenRouter, Converter={StaticResource InverseBoolToVisConverter}}">
-                            <TextBlock Text="Wybierz dostawcę:" 
+                            <TextBlock Text="{DynamicResource Settings_SelectProvider}" 
                                        Foreground="{StaticResource TextMutedBrush}"
                                        Margin="0,0,0,8"/>
                             <ComboBox ItemsSource="{Binding NativeProviderNames}"
@@ -127,7 +127,7 @@
                 </Border>
 
                 <!-- API Key -->
-                <TextBlock Text="API Key" 
+                <TextBlock Text="{DynamicResource Settings_APIKey}" 
                            Foreground="{StaticResource TextMutedBrush}"
                            Margin="0,0,0,8"/>
                 <TextBox Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
@@ -136,8 +136,8 @@
 
                 <!-- API Endpoint (disabled for OpenRouter) -->
                 <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                    <Run Text="API Endpoint"/>
-                    <Run Text=" (auto)" Foreground="{StaticResource PrimaryBrush}" 
+                    <Run Text="{DynamicResource Settings_Endpoint}"/>
+                    <Run Text="{DynamicResource Settings_EndpointAuto}" Foreground="{StaticResource PrimaryBrush}" 
                          FontSize="10"/>
                 </TextBlock>
                 <TextBox Text="{Binding ApiEndpoint, UpdateSourceTrigger=PropertyChanged}"
@@ -178,7 +178,7 @@
                                         </TextBlock>
                                     </StackPanel>
                                     <Button Grid.Column="1" 
-                                            Content="Use"
+                                            Content="{DynamicResource Btn_Use}"
                                             Style="{StaticResource SecondaryButton}"
                                             Padding="12,4"
                                             Command="{Binding DataContext.UseFavoriteModelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -190,12 +190,12 @@
                 </ItemsControl>
 
                 <!-- Model Browser -->
-                <TextBlock Text="Model Browser" 
+                <TextBlock Text="{DynamicResource Settings_ModelBrowser}" 
                            FontSize="24" FontWeight="Bold"
                            Foreground="{StaticResource TextBrush}"
                            Margin="0,24,0,16"/>
 
-                <TextBlock Text="Browse 400+ models from OpenRouter. Select a model to see details and use it." 
+                <TextBlock Text="{DynamicResource Settings_ModelBrowserDesc}" 
                            Foreground="{StaticResource TextMutedBrush}"
                            TextWrapping="Wrap"
                            Margin="0,0,0,16"/>
@@ -305,7 +305,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Current Model" 
+                            <TextBlock Text="{DynamicResource Settings_CurrentModel}" 
                                        FontSize="12"
                                        Foreground="{StaticResource TextMutedBrush}"/>
                             <TextBlock Text="{Binding Model}" 
@@ -330,7 +330,7 @@
                             </Button.Style>
                         </Button>
                         <Button Grid.Column="2" 
-                                Content="Show Details"
+                                Content="{DynamicResource Btn_ShowDetails}"
                                 Style="{StaticResource SecondaryButton}"
                                 Command="{Binding ToggleModelDetailsCommand}"
                                 Padding="12,6"/>
@@ -338,21 +338,21 @@
                 </Border>
 
                 <!-- Manual Model Input -->
-                <TextBlock Text="Or enter model ID manually:" 
+                <TextBlock Text="{DynamicResource Settings_ManualModelId}" 
                            Foreground="{StaticResource TextMutedBrush}"
                            Margin="0,0,0,8"/>
                 <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource ModernTextBox}"
                          Margin="0,0,0,16"/>
 
-            <TextBlock Text="Generation Settings" 
+            <TextBlock Text="{DynamicResource Settings_GenerationSettings}" 
                        FontSize="24" FontWeight="Bold"
                        Foreground="{StaticResource TextBrush}"
                        Margin="0,24,0,24"/>
 
             <!-- Temperature -->
             <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                <Run Text="Temperature: "/>
+                <Run Text="{DynamicResource Settings_Temperature}"/>
                 <Run Text="{Binding Temperature, StringFormat=F2}"/>
             </TextBlock>
             <Slider Value="{Binding Temperature}"
@@ -363,7 +363,7 @@
 
             <!-- Max Tokens -->
             <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                <Run Text="Max Tokens: "/>
+                <Run Text="{DynamicResource Settings_MaxTokens}"/>
                 <Run Text="{Binding MaxTokens}"/>
             </TextBlock>
             <Slider Value="{Binding MaxTokens}"
@@ -373,7 +373,7 @@
                     Margin="0,0,0,16"/>
 
             <!-- System Prompt -->
-            <TextBlock Text="System Prompt" 
+            <TextBlock Text="{DynamicResource Settings_SystemPrompt}" 
                        Foreground="{StaticResource TextMutedBrush}"
                        Margin="0,0,0,8"/>
             <TextBox Text="{Binding SystemPrompt, UpdateSourceTrigger=PropertyChanged}"
@@ -384,83 +384,35 @@
                      VerticalScrollBarVisibility="Auto"
                      Margin="0,0,0,16"/>
 
-            <TextBlock Text="RAG Settings" 
-                       FontSize="24" FontWeight="Bold"
-                       Foreground="{StaticResource TextBrush}"
-                       Margin="0,24,0,24"/>
-
-            <!-- Use RAG -->
-            <CheckBox IsChecked="{Binding UseRag}"
-                      Foreground="{StaticResource TextBrush}"
-                      Margin="0,0,0,16">
-                <TextBlock Text="Enable RAG (Retrieval Augmented Generation)"/>
-            </CheckBox>
-
-            <!-- RAG Top K -->
-            <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                <Run Text="Liczba kontekstowych fragmentów: "/>
-                <Run Text="{Binding RagTopK}"/>
-            </TextBlock>
-            <Slider Value="{Binding RagTopK}"
-                    Minimum="1" Maximum="10" 
-                    TickFrequency="1"
-                    IsSnapToTickEnabled="True"
-                    Margin="0,0,0,16"/>
-
-            <!-- RAG Min Similarity -->
-            <TextBlock Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8">
-                <Run Text="Minimalne podobieństwo: "/>
-                <Run Text="{Binding RagMinSimilarity, StringFormat=P0}"/>
-            </TextBlock>
-            <Slider Value="{Binding RagMinSimilarity}"
-                    Minimum="0.60" Maximum="0.95" 
-                    TickFrequency="0.05"
-                    IsSnapToTickEnabled="True"
-                    Margin="0,0,0,8"/>
-            <Border Background="{StaticResource SurfaceLightBrush}" 
-                    CornerRadius="6" 
-                    Padding="12"
-                    Margin="0,0,0,24">
-                <TextBlock Foreground="{StaticResource TextMutedBrush}" 
-                           TextWrapping="Wrap"
-                           FontSize="12">
-                    <Run Text="💡 "/>
-                    <Run Text="Próg filtruje fragmenty o niskim podobieństwie. "/>
-                    <Run Text="60% = więcej wyników (mniej precyzyjne), "/>
-                    <Run Text="95% = mniej wyników (bardzo precyzyjne). "/>
-                    <Run Text="Zalecane: 70-80% dla ogólnego użycia."/>
-                </TextBlock>
-            </Border>
-
             <!-- Local LLM Section -->
-            <TextBlock Text="🤖 Lokalny Model LLM" 
+            <TextBlock Text="{DynamicResource Settings_LocalLLM}" 
                        FontSize="18" 
                        FontWeight="Bold" 
                        Foreground="{StaticResource TextBrush}"
                        Margin="0,0,0,16"/>
 
-            <CheckBox Content="Używaj lokalnego modelu LLM (offline)"
+            <CheckBox Content="{DynamicResource Chk_UseLocalLlm}"
                       IsChecked="{Binding UseLocalLlm}"
                       Foreground="{StaticResource TextBrush}"
                       Margin="0,0,0,12"/>
 
-            <TextBlock Text="Model: Phi-3 Mini 4K Instruct" 
+            <TextBlock Text="{DynamicResource Settings_LocalLLMModel}" 
                        Foreground="{StaticResource TextMutedBrush}"
                        Margin="0,0,0,4"/>
-            <TextBlock Text="3.8B parametrów, 4-6 GB RAM, ~15-30 tok/s" 
+            <TextBlock Text="{DynamicResource Settings_LocalLLMSpecs}" 
                        Foreground="{StaticResource TextMutedBrush}"
                        FontSize="12"
                        Margin="0,0,0,12"/>
 
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                <TextBlock Text="Status: " Foreground="{StaticResource TextMutedBrush}"/>
+                <TextBlock Text="{DynamicResource Settings_Status}" Foreground="{StaticResource TextMutedBrush}"/>
                 <TextBlock Foreground="{StaticResource PrimaryBrush}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Text" Value="Nie pobrano"/>
+                            <Setter Property="Text" Value="{DynamicResource Settings_NotDownloaded}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsLocalLlmModelDownloaded}" Value="True">
-                                    <Setter Property="Text" Value="✓ Gotowy"/>
+                                    <Setter Property="Text" Value="{DynamicResource Settings_Ready}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -468,7 +420,7 @@
                 </TextBlock>
             </StackPanel>
 
-            <Button Content="Pobierz model (~2.4 GB)"
+            <Button Content="{DynamicResource Btn_DownloadModel}"
                     Style="{StaticResource SecondaryButton}"
                     Command="{Binding DownloadLocalLlmModelCommand}"
                     IsEnabled="{Binding IsDownloadingModel, Converter={StaticResource InverseBool}}"
@@ -514,7 +466,7 @@
             </Border>
 
             <!-- Save Button -->
-            <Button Content="Save Settings"
+            <Button Content="{DynamicResource Btn_SaveSettings}"
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding SaveSettingsCommand}"
                     HorizontalAlignment="Left"

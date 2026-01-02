@@ -19,12 +19,16 @@ public class LlmServiceIntegrationTests
 {
     private ISettingsService _settingsService = null!;
     private ILocalEmbeddingService _localEmbeddingService = null!;
+    private IRateLimiter _rateLimiter = null!;
+    private ILoggingService _loggingService = null!;
 
     [TestInitialize]
     public void Setup()
     {
         _settingsService = Substitute.For<ISettingsService>();
         _localEmbeddingService = Substitute.For<ILocalEmbeddingService>();
+        _rateLimiter = Substitute.For<IRateLimiter>();
+        _loggingService = Substitute.For<ILoggingService>();
 
         _settingsService.GetSettingsAsync().Returns(new AppSettings
         {
@@ -48,7 +52,7 @@ public class LlmServiceIntegrationTests
         _settingsService.GetSettingsAsync().Returns(new AppSettings { ApiKey = "" });
 
         var httpClientFactory = CreateMockHttpClientFactory(new HttpResponseMessage(HttpStatusCode.OK));
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Hello" } };
         var chunks = new List<string>();
@@ -74,7 +78,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Question" } };
         var ragContext = "Relevant context from documents";
@@ -100,7 +104,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Hi" } };
         var receivedChunks = new List<string>();
@@ -125,7 +129,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Hi" } };
         var chunks = new List<string>();
@@ -150,7 +154,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Hi" } };
         var chunks = new List<string>();
@@ -177,7 +181,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var messages = new List<ChatMessage> { new() { Role = "user", Content = "Hi" } };
 
@@ -216,7 +220,7 @@ public class LlmServiceIntegrationTests
             .Returns(new float[] { 0.1f, 0.2f, 0.3f });
 
         var httpClientFactory = CreateMockHttpClientFactory(new HttpResponseMessage(HttpStatusCode.OK));
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var embedding = await service.GetEmbeddingAsync("test text");
 
@@ -239,7 +243,7 @@ public class LlmServiceIntegrationTests
             .Returns(new float[] { 0.5f });
 
         var httpClientFactory = CreateMockHttpClientFactory(new HttpResponseMessage(HttpStatusCode.OK));
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         await service.GetEmbeddingAsync("test");
 
@@ -274,7 +278,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var embedding = await service.GetEmbeddingAsync("test");
 
@@ -291,7 +295,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(new HttpResponseMessage(HttpStatusCode.OK));
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var embedding = await service.GetEmbeddingAsync("test");
 
@@ -307,7 +311,7 @@ public class LlmServiceIntegrationTests
         });
 
         var httpClientFactory = CreateMockHttpClientFactory(handler);
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         var embedding = await service.GetEmbeddingAsync("test");
 
@@ -327,7 +331,7 @@ public class LlmServiceIntegrationTests
             .Returns(new float[] { 0.1f });
 
         var httpClientFactory = CreateMockHttpClientFactory(new HttpResponseMessage(HttpStatusCode.OK));
-        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService);
+        var service = new LlmService(httpClientFactory, _settingsService, _localEmbeddingService, _rateLimiter, _loggingService);
 
         await service.GetEmbeddingAsync("test", isQuery: false, CancellationToken.None);
 

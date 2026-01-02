@@ -14,7 +14,12 @@ public class AppSettings
     public string SystemPrompt { get; set; } = "You are a helpful assistant.";
     public bool UseRag { get; set; } = false;
     public int RagTopK { get; set; } = 3;
-    public double RagMinSimilarity { get; set; } = 0.75; // 75% default, range 60-95%
+    public double RagMinSimilarity { get; set; } = 0.5; // 50% default - more permissive for better recall
+    public RetrievalMode RagRetrievalMode { get; set; } = RetrievalMode.Hybrid;
+    
+    // Hybrid search fusion parameters
+    public double RrfK { get; set; } = 60.0; // RRF constant - higher = more equal weighting
+    public double HybridBalance { get; set; } = 0.5; // 0 = only keyword, 1 = only vector, 0.5 = balanced
     public bool SidebarCollapsed { get; set; } = false;
     
     // Embedding settings

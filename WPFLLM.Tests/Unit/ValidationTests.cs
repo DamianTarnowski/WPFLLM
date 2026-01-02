@@ -42,11 +42,11 @@ public class ValidationTests
     }
 
     [TestMethod]
-    public void AppSettings_RagMinSimilarity_ShouldDefaultTo075()
+    public void AppSettings_RagMinSimilarity_ShouldDefaultTo05()
     {
         var settings = new AppSettings();
 
-        settings.RagMinSimilarity.Should().Be(0.75);
+        settings.RagMinSimilarity.Should().Be(0.5);
     }
 
     [TestMethod]

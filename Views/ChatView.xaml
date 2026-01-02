@@ -123,7 +123,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Button Content="+ New Chat" 
+                <Button Content="{DynamicResource Btn_NewChat}" 
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding NewConversationCommand}"
                         Margin="0,0,0,12"/>
@@ -135,18 +135,43 @@
                          ItemContainerStyle="{StaticResource ConversationListItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Title}" 
-                                       TextTrimming="CharacterEllipsis"
-                                       Foreground="{StaticResource TextBrush}"/>
+                            <Grid>
+                                <TextBlock Text="{Binding Title}" 
+                                           TextTrimming="CharacterEllipsis"
+                                           Foreground="{StaticResource TextBrush}"
+                                           Visibility="{Binding IsEditing, Converter={StaticResource InverseBoolToVisConverter}}"
+                                           MouseLeftButtonDown="ConversationTitle_DoubleClick"/>
+                                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         KeyDown="ConversationTitleEdit_KeyDown"
+                                         LostFocus="ConversationTitleEdit_LostFocus"/>
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <Button Grid.Row="2" 
-                        Content="Delete Selected"
-                        Style="{StaticResource SecondaryButton}"
-                        Command="{Binding DeleteConversationCommand}"
-                        Margin="0,12,0,0"/>
+                <StackPanel Grid.Row="2" Margin="0,12,0,0">
+                    <Button Content="{DynamicResource Btn_DeleteSelected}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding DeleteConversationCommand}"
+                            Margin="0,0,0,8"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="{DynamicResource Btn_Export}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ExportConversationCommand}"
+                                ToolTip="Export to Markdown or JSON"/>
+                        <Button Grid.Column="2" Content="{DynamicResource Btn_Import}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ImportConversationCommand}"
+                                ToolTip="Import from JSON"/>
+                    </Grid>
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -172,6 +197,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -325,22 +351,54 @@
                           Grid.Row="1" 
                           VerticalScrollBarVisibility="Auto"
                           Padding="16">
-                <ItemsControl ItemsSource="{Binding Messages}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                <Grid>
+                    <!-- Welcome message when no messages -->
+                    <StackPanel VerticalAlignment="Center" 
+                                HorizontalAlignment="Center"
+                                Visibility="{Binding HasMessages, Converter={StaticResource InverseBoolToVisConverter}}">
+                        <TextBlock Text="💬" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                        <TextBlock Text="{DynamicResource Chat_Welcome}" 
+                                   FontSize="20" 
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="{DynamicResource Chat_WelcomeHint}"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="400"/>
+                    </StackPanel>
+                    
+                    <ItemsControl ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
             </ScrollViewer>
 
-            <!-- Input Area -->
+            <!-- Warning Message -->
             <Border Grid.Row="2" 
+                    Background="#FEF3C7"
+                    Padding="12"
+                    Visibility="{Binding HasWarning, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding WarningMessage}" 
+                           Foreground="#92400E"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- Input Area -->
+            <Border Grid.Row="3" 
                     Background="{StaticResource SurfaceBrush}"
                     Padding="16">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
@@ -355,14 +413,23 @@
                         </TextBox.InputBindings>
                     </TextBox>
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
-                        <Button Content="Send"
+                    <!-- RAG Toggle -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                        <CheckBox IsChecked="{Binding UseRag}"
+                                  Content="📚 RAG"
+                                  Foreground="{StaticResource TextBrush}"
+                                  VerticalAlignment="Center"
+                                  ToolTip="Włącz/wyłącz wyszukiwanie w bazie wiedzy"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+                        <Button Content="{DynamicResource Btn_Send}"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding SendMessageCommand}"
                                 IsEnabled="{Binding IsStreaming, Converter={StaticResource InverseBoolConverter}}"
                                 Visibility="{Binding IsStreaming, Converter={StaticResource InverseBoolToVisConverter}}"/>
                         
-                        <Button Content="Stop"
+                        <Button Content="{DynamicResource Btn_Stop}"
                                 Style="{StaticResource SecondaryButton}"
                                 Command="{Binding StopStreamingCommand}"
                                 Visibility="{Binding IsStreaming, Converter={StaticResource BoolToVis}}"/>
@@ -371,7 +438,7 @@
             </Border>
 
             <!-- Status Bar -->
-            <Border Grid.Row="3" 
+            <Border Grid.Row="4" 
                     Background="{StaticResource SurfaceBrush}"
                     Padding="16,8"
                     BorderThickness="0,1,0,0"
@@ -381,9 +448,16 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding StatusText}" 
-                               Foreground="{StaticResource TextMutedBrush}"
-                               FontSize="12"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding StatusText}" 
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   FontSize="12"/>
+                        <TextBlock Text="{Binding RagStatusText}" 
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   FontSize="12"
+                                   Margin="16,0,0,0"
+                                   Visibility="{Binding IsRagEnabled, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <Button Content="🔬 Test RAG"
                                 Style="{StaticResource SecondaryButton}"
@@ -427,7 +501,7 @@
                     <Grid>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="✈️ " FontSize="14"/>
-                            <TextBlock Text="RAG Debug" 
+                            <TextBlock Text="{DynamicResource Debug_Title}" 
                                        FontSize="14" 
                                        FontWeight="Bold"
                                        Foreground="{StaticResource TextBrush}"/>
@@ -469,7 +543,7 @@
                             <StackPanel HorizontalAlignment="Center">
                                 <TextBlock Text="{Binding LastRagTrace.TotalTimeMs, StringFormat={}{0}ms}" 
                                            FontSize="16" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Total" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource Debug_TotalTime}" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                         
@@ -481,7 +555,7 @@
                                     <Run Text="/" Foreground="{StaticResource TextMutedBrush}"/>
                                     <Run Text="{Binding LastRagTrace.TotalCandidates, Mode=OneWay}" Foreground="{StaticResource TextMutedBrush}"/>
                                 </TextBlock>
-                                <TextBlock Text="Selected" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource Debug_Sources}" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                         
@@ -647,7 +721,7 @@
                     <TabItem Header="⏱️ Timings">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,8">
                             <StackPanel>
-                                <TextBlock Text="Pipeline Timing Breakdown" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" FontSize="12" Margin="0,0,0,12"/>
+                                <TextBlock Text="{DynamicResource Debug_Latency}" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" FontSize="12" Margin="0,0,0,12"/>
                                 <ItemsControl ItemsSource="{Binding Timings}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>

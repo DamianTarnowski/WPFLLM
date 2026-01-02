@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WPFLLM.Models;
@@ -11,6 +12,8 @@ public partial class ChatViewModel : ObservableObject
 {
     private readonly IChatService _chatService;
     private readonly IRagService _ragService;
+    private readonly ISettingsService _settingsService;
+    private readonly IExportService _exportService;
     private CancellationTokenSource? _streamCts;
 
     [ObservableProperty]
@@ -21,6 +24,9 @@ public partial class ChatViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<ChatMessageViewModel> _messages = [];
+
+    [ObservableProperty]
+    private bool _hasMessages;
 
     [ObservableProperty]
     private string _inputText = string.Empty;
@@ -79,15 +85,102 @@ public partial class ChatViewModel : ObservableObject
 
     public IReadOnlyList<RetrievalMode> RetrievalModes { get; } = Enum.GetValues<RetrievalMode>();
 
-    public ChatViewModel(IChatService chatService, IRagService ragService)
+    [ObservableProperty]
+    private string _warningMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasWarning;
+
+    [ObservableProperty]
+    private bool _isRagEnabled;
+
+    [ObservableProperty]
+    private int _ragChunksFound;
+
+    [ObservableProperty]
+    private string _ragStatusText = string.Empty;
+
+    [ObservableProperty]
+    private bool _useRag;
+
+    public ChatViewModel(IChatService chatService, IRagService ragService, ISettingsService settingsService, IExportService exportService)
     {
         _chatService = chatService;
         _ragService = ragService;
+        _settingsService = settingsService;
+        _exportService = exportService;
+        
+        _chatService.RagContextRetrieved += OnRagContextRetrieved;
+        _settingsService.SettingsChanged += OnSettingsChanged;
         _ = InitializeAsync();
+    }
+
+    private void OnSettingsChanged(object? sender, AppSettings settings)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            UseRag = settings.UseRag;
+        });
+    }
+
+    async partial void OnUseRagChanged(bool value)
+    {
+        var settings = await _settingsService.GetSettingsAsync();
+        if (settings.UseRag != value)
+        {
+            settings.UseRag = value;
+            await _settingsService.SaveSettingsAsync(settings);
+        }
+    }
+
+    private void OnRagContextRetrieved(object? sender, RagContextInfo info)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            IsRagEnabled = info.IsEnabled;
+            RagChunksFound = info.ChunksFound;
+            if (info.IsEnabled)
+            {
+                RagStatusText = info.ChunksFound > 0 
+                    ? $"📚 RAG: {info.ChunksFound} chunks" 
+                    : "📚 RAG: brak dopasowań";
+                
+                // Populate debug panel with full trace data
+                if (info.Result != null && info.Trace != null)
+                {
+                    LastRetrievalResult = info.Result;
+                    LastRagTrace = info.Trace;
+                    
+                    RetrievedChunks.Clear();
+                    foreach (var chunk in info.Result.Chunks)
+                    {
+                        RetrievedChunks.Add(new RetrievedChunkViewModel(chunk));
+                    }
+
+                    AllCandidates.Clear();
+                    foreach (var candidate in info.Trace.Candidates)
+                    {
+                        AllCandidates.Add(new RagCandidateViewModel(candidate));
+                    }
+
+                    Timings.Clear();
+                    foreach (var timing in info.Trace.Timings)
+                    {
+                        Timings.Add(new RagTimingViewModel(timing));
+                    }
+                }
+            }
+            else
+            {
+                RagStatusText = string.Empty;
+            }
+        });
     }
 
     private async Task InitializeAsync()
     {
+        var settings = await _settingsService.GetSettingsAsync();
+        UseRag = settings.UseRag;
         await LoadConversationsAsync();
         await UpdatePendingEmbeddingsCountAsync();
     }
@@ -106,6 +199,7 @@ public partial class ChatViewModel : ObservableObject
     async partial void OnSelectedConversationChanged(Conversation? value)
     {
         Messages.Clear();
+        HasMessages = false;
         if (value == null) return;
 
         var messages = await _chatService.GetMessagesAsync(value.Id);
@@ -113,6 +207,7 @@ public partial class ChatViewModel : ObservableObject
         {
             Messages.Add(new ChatMessageViewModel(msg));
         }
+        HasMessages = Messages.Count > 0;
     }
 
     [RelayCommand]
@@ -138,6 +233,18 @@ public partial class ChatViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(InputText)) return;
 
+        // Validate API configuration
+        var settings = await _settingsService.GetSettingsAsync();
+        if (string.IsNullOrWhiteSpace(settings.ApiKey))
+        {
+            WarningMessage = GetLocalizedString("Validation_NoApiKey");
+            HasWarning = true;
+            return;
+        }
+
+        HasWarning = false;
+        WarningMessage = string.Empty;
+
         if (SelectedConversation == null)
         {
             await NewConversationAsync();
@@ -153,6 +260,7 @@ public partial class ChatViewModel : ObservableObject
             ConversationId = SelectedConversation!.Id
         });
         Messages.Add(userMsgVm);
+        HasMessages = true;
 
         var assistantMsgVm = new ChatMessageViewModel(new ChatMessage
         {
@@ -185,10 +293,11 @@ public partial class ChatViewModel : ObservableObject
                 responseBuilder.ToString());
             assistantMsgVm.Message = savedMessage;
 
-            SelectedConversation.Title = userMessage.Length > 30 
-                ? userMessage[..30] + "..." 
-                : userMessage;
-            await _chatService.UpdateConversationAsync(SelectedConversation);
+            // Generate title after first exchange (2 messages: user + assistant)
+            if (Messages.Count == 2 && SelectedConversation.Title.StartsWith("Chat "))
+            {
+                _ = GenerateTitleAsync(userMessage, responseBuilder.ToString());
+            }
         }
         catch (OperationCanceledException)
         {
@@ -213,6 +322,30 @@ public partial class ChatViewModel : ObservableObject
         _streamCts?.Cancel();
     }
 
+    private async Task GenerateTitleAsync(string userMessage, string assistantResponse)
+    {
+        try
+        {
+            var title = await _chatService.GenerateConversationTitleAsync(userMessage, assistantResponse);
+            if (!string.IsNullOrWhiteSpace(title) && SelectedConversation != null)
+            {
+                SelectedConversation.Title = title;
+                await _chatService.UpdateConversationAsync(SelectedConversation);
+            }
+        }
+        catch
+        {
+            // Silently fail - title generation is not critical
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpdateConversationTitleAsync(Conversation? conv)
+    {
+        if (conv == null) return;
+        await _chatService.UpdateConversationAsync(conv);
+    }
+
     [RelayCommand]
     private async Task DeleteMessageAsync(ChatMessageViewModel? messageVm)
     {
@@ -220,6 +353,7 @@ public partial class ChatViewModel : ObservableObject
         
         await _chatService.DeleteMessageAsync(messageVm!.Message.Id);
         Messages.Remove(messageVm);
+        HasMessages = Messages.Count > 0;
     }
 
     [RelayCommand]
@@ -288,7 +422,14 @@ public partial class ChatViewModel : ObservableObject
         StatusText = "Testing retrieval...";
         try
         {
-            var (result, trace) = await _ragService.RetrieveWithTraceAsync(InputText, 5, 0.6, SelectedRetrievalMode);
+            var settings = await _settingsService.GetSettingsAsync();
+            var (result, trace) = await _ragService.RetrieveWithTraceAsync(
+                InputText, 
+                settings.RagTopK, 
+                settings.RagMinSimilarity, 
+                settings.RagRetrievalMode,
+                settings.RrfK,
+                settings.HybridBalance);
             LastRetrievalResult = result;
             LastRagTrace = trace;
             
@@ -342,6 +483,76 @@ public partial class ChatViewModel : ObservableObject
         finally
         {
             IsGeneratingEmbeddings = false;
+        }
+    }
+
+    private static string GetLocalizedString(string key)
+    {
+        return Application.Current.Resources[key] as string ?? key;
+    }
+
+    [RelayCommand]
+    private async Task ExportConversationAsync()
+    {
+        if (SelectedConversation == null) return;
+
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Export Conversation",
+            FileName = $"{SelectedConversation.Title.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd}",
+            Filter = "Markdown (*.md)|*.md|JSON (*.json)|*.json",
+            DefaultExt = ".md"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            try
+            {
+                var messages = await _chatService.GetMessagesAsync(SelectedConversation.Id);
+                var format = dialog.FilterIndex == 2 ? ExportFormat.Json : ExportFormat.Markdown;
+                await _exportService.ExportToFileAsync(SelectedConversation, messages, dialog.FileName, format);
+                StatusText = $"Exported to {System.IO.Path.GetFileName(dialog.FileName)}";
+            }
+            catch (Exception ex)
+            {
+                StatusText = $"Export failed: {ex.Message}";
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportConversationAsync()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Import Conversation",
+            Filter = "JSON files (*.json)|*.json",
+            DefaultExt = ".json"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            try
+            {
+                var (conversation, messages) = await _exportService.ImportFromJsonAsync(dialog.FileName);
+                
+                // Create new conversation in database
+                var newConv = await _chatService.CreateConversationAsync(conversation.Title + " (imported)");
+                
+                // Add messages
+                foreach (var msg in messages)
+                {
+                    await _chatService.AddMessageAsync(newConv.Id, msg.Role, msg.Content);
+                }
+                
+                await LoadConversationsAsync();
+                SelectedConversation = Conversations.FirstOrDefault(c => c.Id == newConv.Id);
+                StatusText = $"Imported: {newConv.Title}";
+            }
+            catch (Exception ex)
+            {
+                StatusText = $"Import failed: {ex.Message}";
+            }
         }
     }
 }

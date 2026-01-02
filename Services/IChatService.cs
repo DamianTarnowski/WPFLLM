@@ -2,8 +2,16 @@ using WPFLLM.Models;
 
 namespace WPFLLM.Services;
 
+public record RagContextInfo(
+    bool IsEnabled, 
+    int ChunksFound, 
+    string Context, 
+    RetrievalResult? Result = null, 
+    RagTrace? Trace = null);
+
 public interface IChatService
 {
+    event EventHandler<RagContextInfo>? RagContextRetrieved;
     Task<List<Conversation>> GetConversationsAsync();
     Task<Conversation> CreateConversationAsync(string title);
     Task UpdateConversationAsync(Conversation conversation);
@@ -17,4 +25,5 @@ public interface IChatService
     Task<List<MessageSearchResult>> SemanticSearchAsync(string query, int topK = 10, CancellationToken cancellationToken = default);
     Task GenerateMessageEmbeddingsAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default);
     Task<int> GetMessagesWithoutEmbeddingsCountAsync();
+    Task<string> GenerateConversationTitleAsync(string userMessage, string assistantResponse, CancellationToken cancellationToken = default);
 }
