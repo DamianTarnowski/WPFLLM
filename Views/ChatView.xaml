@@ -5,8 +5,17 @@
 
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type vm:ChatMessageViewModel}">
-            <Grid Margin="8,4"
-                  HorizontalAlignment="{Binding IsUser, Converter={StaticResource AlignConverter}}">
+            <Grid Margin="8,4">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>

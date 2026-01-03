@@ -6,7 +6,6 @@
     <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
     <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
-    <converters:BoolToAlignmentConverter x:Key="AlignConverter"/>
     <converters:CountToVisibilityConverter x:Key="CountToVis"/>
     <converters:StringToVisibilityConverter x:Key="StringToVis"/>
     <converters:SizeToStringConverter x:Key="SizeConverter"/>
