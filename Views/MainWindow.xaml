@@ -7,7 +7,6 @@
         Height="800" Width="1200"
         MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Icon="/Resources/app.ico"
         Background="{StaticResource BackgroundBrush}">
 
     <Window.DataContext>

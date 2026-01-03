@@ -1,8 +1,21 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:WPFLLM.Converters">
 
-    <!-- Built-in Converters only -->
+    <!-- Converters -->
     <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+    <converters:BoolToAlignmentConverter x:Key="AlignConverter"/>
+    <converters:CountToVisibilityConverter x:Key="CountToVis"/>
+    <converters:StringToVisibilityConverter x:Key="StringToVis"/>
+    <converters:SizeToStringConverter x:Key="SizeConverter"/>
+    <converters:DownloadButtonVisibilityConverter x:Key="DownloadButtonVis"/>
+    <converters:ResumeButtonVisibilityConverter x:Key="ResumeButtonVis"/>
+    <converters:DeleteButtonVisibilityConverter x:Key="DeleteButtonVis"/>
+    <converters:PartialProgressVisibilityConverter x:Key="PartialProgressVis"/>
+    <converters:NullToVisibilityConverter x:Key="NullToVis"/>
+    <converters:InverseBoolConverter x:Key="InverseBool"/>
 
     <!-- Colors -->
     <Color x:Key="PrimaryColor">#6366F1</Color>
@@ -16,15 +29,15 @@
     <Color x:Key="AssistantMessageColor">#1E293B</Color>
 
     <!-- Brushes -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}"/>
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{DynamicResource PrimaryDarkColor}"/>
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{DynamicResource SurfaceColor}"/>
-    <SolidColorBrush x:Key="SurfaceLightBrush" Color="{DynamicResource SurfaceLightColor}"/>
-    <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}"/>
-    <SolidColorBrush x:Key="TextMutedBrush" Color="{DynamicResource TextMutedColor}"/>
-    <SolidColorBrush x:Key="UserMessageBrush" Color="{DynamicResource UserMessageColor}"/>
-    <SolidColorBrush x:Key="AssistantMessageBrush" Color="{DynamicResource AssistantMessageColor}"/>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDarkColor}"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="SurfaceLightBrush" Color="{StaticResource SurfaceLightColor}"/>
+    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}"/>
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}"/>
+    <SolidColorBrush x:Key="UserMessageBrush" Color="{StaticResource UserMessageColor}"/>
+    <SolidColorBrush x:Key="AssistantMessageBrush" Color="{StaticResource AssistantMessageColor}"/>
 
     <!-- Button Style -->
     <Style x:Key="PrimaryButton" TargetType="Button">

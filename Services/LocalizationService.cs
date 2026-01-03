@@ -28,8 +28,8 @@ public class LocalizationService : ILocalizationService
 
     public LocalizationService()
     {
-        // Don't load in constructor - wait for explicit SetLanguage call
-        // to avoid issues with Application.Current.Resources not ready
+        // Load default language
+        SetLanguage("en-US");
     }
 
     public void SetLanguage(string cultureCode)

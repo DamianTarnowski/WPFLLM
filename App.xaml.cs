@@ -34,25 +34,20 @@ public partial class App : Application
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
 
-        // Initialize critical services synchronously before UI loads
-        try
-        {
-            var dbService = Services.GetRequiredService<IDatabaseService>();
-            dbService.InitializeAsync().GetAwaiter().GetResult();
-            
-            var settingsService = Services.GetRequiredService<ISettingsService>();
-            var appSettings = settingsService.GetSettingsAsync().GetAwaiter().GetResult();
-            
-            var localization = Services.GetRequiredService<ILocalizationService>();
-            localization.SetLanguage(appSettings.Language);
-            
-            var encryption = Services.GetRequiredService<IEncryptionService>();
-            encryption.SetEnabled(appSettings.EncryptData);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[INIT] Error: {ex}");
-        }
+        // Initialize database first
+        var dbService = Services.GetRequiredService<IDatabaseService>();
+        dbService.InitializeAsync().Wait();
+        
+        // Load saved language preference and initialize localization
+        var settingsService = Services.GetRequiredService<ISettingsService>();
+        var appSettings = settingsService.GetSettingsAsync().Result;
+        
+        var localization = Services.GetRequiredService<ILocalizationService>();
+        localization.SetLanguage(appSettings.Language);
+        
+        // Initialize encryption based on settings
+        var encryption = Services.GetRequiredService<IEncryptionService>();
+        encryption.SetEnabled(appSettings.EncryptData);
     }
 
     private static void ConfigureServices(IServiceCollection services)
