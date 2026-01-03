@@ -1,20 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="clr-namespace:WPFLLM.Converters">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Converters -->
+    <!-- Built-in Converters only -->
     <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
-    <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
-    <converters:CountToVisibilityConverter x:Key="CountToVis"/>
-    <converters:StringToVisibilityConverter x:Key="StringToVis"/>
-    <converters:SizeToStringConverter x:Key="SizeConverter"/>
-    <converters:DownloadButtonVisibilityConverter x:Key="DownloadButtonVis"/>
-    <converters:ResumeButtonVisibilityConverter x:Key="ResumeButtonVis"/>
-    <converters:DeleteButtonVisibilityConverter x:Key="DeleteButtonVis"/>
-    <converters:PartialProgressVisibilityConverter x:Key="PartialProgressVis"/>
-    <converters:NullToVisibilityConverter x:Key="NullToVis"/>
-    <converters:InverseBoolConverter x:Key="InverseBool"/>
 
     <!-- Colors -->
     <Color x:Key="PrimaryColor">#6366F1</Color>
