@@ -8,7 +8,7 @@
 
   <Identity Name="24677DamianTarnowski.WPFLLM-AIAssistant"
             Publisher="CN=99559BA1-8F6A-4FBB-AE4C-22C3D989353D"
-            Version="1.0.1.0"
+            Version="1.0.2.0"
             ProcessorArchitecture="x64" />
 
   <mp:PhoneIdentity PhoneProductId="8a2b4f5c-1234-5678-9abc-def012345678" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
