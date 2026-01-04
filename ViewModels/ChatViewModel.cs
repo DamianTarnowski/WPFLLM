@@ -417,7 +417,17 @@ public partial class ChatViewModel : ObservableObject
     [RelayCommand]
     private async Task TestRetrievalAsync()
     {
-        if (string.IsNullOrWhiteSpace(InputText)) return;
+        if (string.IsNullOrWhiteSpace(InputText))
+        {
+            MessageBox.Show(
+                "Wpisz zapytanie w pole tekstowe, a następnie kliknij 'Test RAG'.\n\n" +
+                "Ta funkcja testuje wyszukiwanie w bazie wiedzy bez wysyłania do LLM.\n" +
+                "Zobaczysz jakie fragmenty dokumentów zostaną użyte jako kontekst.",
+                "Test RAG - Instrukcja",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
 
         StatusText = "Testing retrieval...";
         try
