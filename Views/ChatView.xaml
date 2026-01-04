@@ -458,7 +458,8 @@
                                    Margin="16,0,0,0"
                                    Visibility="{Binding IsRagEnabled, Converter={StaticResource BoolToVis}}"/>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                Visibility="{Binding UseRag, Converter={StaticResource BoolToVis}}">
                         <Button Content="🔬 Test RAG"
                                 Style="{StaticResource SecondaryButton}"
                                 Command="{Binding TestRetrievalCommand}"
