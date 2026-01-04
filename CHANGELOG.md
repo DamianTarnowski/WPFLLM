@@ -7,11 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-01-04
+
 ### Added
+- Microsoft Store publication support (MSIX packaging)
+- Test RAG button with usage instructions when input is empty
+- RAG/Debug buttons visibility tied to "Use RAG" toggle
+
+### Changed
+- Default export format changed from Markdown to JSON for better import compatibility
 - Comprehensive test suite with **317 tests** (unit, integration, real API)
-- Real API integration tests for OpenRouter
-- `.env` file support for API keys in tests
-- Detailed testing documentation in README
+
+### Fixed
+- Fixed startup crash caused by Icon property in MainWindow.xaml
+- Fixed XAML TypeConverterMarkupExtension error on app launch
+
+## [1.0.1] - 2026-01-03
+
+### Added
+- MSIX packaging project for Microsoft Store
+- Store assets (logos, splash screen, icons)
+- Privacy policy document
+- Store submission guide
+
+### Fixed
+- Package identity and publisher ID configuration
 
 ## [1.0.0] - 2026-01-01
 
@@ -76,6 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.0.2 | 2026-01-04 | Microsoft Store release, UI improvements, bug fixes |
+| 1.0.1 | 2026-01-03 | MSIX packaging, Store assets, privacy policy |
 | 1.0.0 | 2026-01-01 | Initial release with full RAG, encryption, local embeddings |
 
 ---

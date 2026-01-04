@@ -122,11 +122,18 @@ Zrób screenshoty aplikacji (min. 1366x768):
 ## Krok 6: Packages
 
 1. Kliknij **Packages**
-2. Wgraj plik `.msixupload` lub `.msixbundle` z folderu:
+2. Wgraj plik `.msixupload` z folderu:
    ```
-   WPFLLM.Package\AppPackages\
+   WPFLLM.Package\AppPackages\WPFLLM.Package_X.X.X.0_x64.msixupload
    ```
 3. Poczekaj na walidację
+
+### Restricted Capabilities (runFullTrust)
+
+Przy uploadzie pojawi się pytanie o `runFullTrust`. Wpisz:
+```
+WPF desktop app needs runFullTrust for: file access (user-selected docs for RAG), local SQLite database, HTTP calls to AI APIs, ONNX model loading for embeddings. No system changes, no telemetry.
+```
 
 ---
 
@@ -135,6 +142,24 @@ Zrób screenshoty aplikacji (min. 1366x768):
 1. Przejrzyj wszystkie sekcje (powinny mieć zielone checkmarki)
 2. Kliknij **Submit to the Store**
 3. Poczekaj na review (1-3 dni robocze)
+
+---
+
+## Krok 8: Budowanie nowej wersji
+
+Przy każdej aktualizacji:
+
+1. Zwiększ wersję w `Package.appxmanifest`:
+   ```xml
+   Version="1.0.3.0"  <!-- zwiększ ostatnią cyfrę przed .0 -->
+   ```
+
+2. Zbuduj pakiet:
+   ```powershell
+   msbuild WPFLLM.Package\WPFLLM.Package.wapproj /p:Configuration=Release /p:Platform=x64 /p:AppxPackageDir=AppPackages\ /p:UapAppxPackageBuildMode=StoreUpload /restore
+   ```
+
+3. Wgraj nowy `.msixupload` do Partner Center
 
 ---
 

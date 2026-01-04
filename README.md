@@ -4,6 +4,7 @@
 
 ### AI Assistant with RAG, Document Analysis & Enterprise Security
 
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-Available-0078D4?style=for-the-badge&logo=microsoft&logoColor=white)](https://apps.microsoft.com/store/detail/24677DamianTarnowski.WPFLLM-AIAssistant)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/WPF-Desktop-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
@@ -161,6 +162,12 @@ Formula: RRF(k=60) - Reciprocal Rank Fusion combining vector and keyword results
 
 ### Installation
 
+**Option 1: Microsoft Store (Recommended)**
+
+[<img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download from Microsoft Store" height="80"/>](https://apps.microsoft.com/store/detail/24677DamianTarnowski.WPFLLM-AIAssistant)
+
+**Option 2: Build from Source**
+
 ```bash
 # Clone the repository
 git clone https://github.com/DamianTarnowski/WPFLLM.git
@@ -230,6 +237,8 @@ All models support **100+ languages** including Polish, English, German, French,
 |----------|-------------|
 | [Architecture](docs/ARCHITECTURE.md) | System design, MVVM patterns, service layer |
 | [Embeddings](docs/EMBEDDINGS.md) | Local embedding models, Rust tokenizer, E5 setup |
+| [Store Publishing](WPFLLM.Package/STORE_SUBMISSION_GUIDE.md) | Microsoft Store submission guide |
+| [Privacy Policy](PRIVACY.md) | Privacy policy for Store compliance |
 | [Contributing](CONTRIBUTING.md) | How to contribute, code style, commit conventions |
 | [Changelog](CHANGELOG.md) | Version history and release notes |
 
