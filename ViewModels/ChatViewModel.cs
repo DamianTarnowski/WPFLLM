@@ -500,8 +500,8 @@ public partial class ChatViewModel : ObservableObject
         {
             Title = "Export Conversation",
             FileName = $"{SelectedConversation.Title.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd}",
-            Filter = "Markdown (*.md)|*.md|JSON (*.json)|*.json",
-            DefaultExt = ".md"
+            Filter = "JSON (*.json)|*.json|Markdown (*.md)|*.md",
+            DefaultExt = ".json"
         };
 
         if (dialog.ShowDialog() == true)
@@ -509,7 +509,7 @@ public partial class ChatViewModel : ObservableObject
             try
             {
                 var messages = await _chatService.GetMessagesAsync(SelectedConversation.Id);
-                var format = dialog.FilterIndex == 2 ? ExportFormat.Json : ExportFormat.Markdown;
+                var format = dialog.FilterIndex == 1 ? ExportFormat.Json : ExportFormat.Markdown;
                 await _exportService.ExportToFileAsync(SelectedConversation, messages, dialog.FileName, format);
                 StatusText = $"Exported to {System.IO.Path.GetFileName(dialog.FileName)}";
             }
